@@ -1,0 +1,8 @@
+name: MonstersPlus
+version: ${project.version}
+main: com.funnyboyroks.monstersplus.MonstersPlus
+api-version: 1.16
+prefix: Monsters+
+author: funnyboy_roks
+commands:
+
