@@ -1,6 +1,7 @@
 package com.funnyboyroks.monstersplus;
 
 import com.funnyboyroks.monstersplus.Listeners.MainListeners;
+import com.funnyboyroks.monstersplus.Listeners.MonsterListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,7 +11,7 @@ public final class MonstersPlus extends JavaPlugin {
 
     public static MonstersPlus instance;
 
-    private static String VERSION = "v0.0.1";
+    private static final String VERSION = "v0.0.1";
 
     @Override
     public void onEnable() {
@@ -29,6 +30,7 @@ public final class MonstersPlus extends JavaPlugin {
 
     public void registerListeners() {
         Bukkit.getPluginManager().registerEvents(new MainListeners(), instance);
+        Bukkit.getPluginManager().registerEvents(new MonsterListeners(), instance);
     }
 
     @Override

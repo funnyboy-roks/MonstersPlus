@@ -1,5 +1,8 @@
 package com.funnyboyroks.monstersplus.Data.structs;
 
+import com.funnyboyroks.monstersplus.Tasks.SpawnTask;
+import com.funnyboyroks.monstersplus.Utils.Utils;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
@@ -7,6 +10,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public enum MonsterType {
     ZOMBIE_CHARGER("Zombie Charger", 30, EntityType.ZOMBIE, DiffLevel.EASY),
@@ -120,6 +128,15 @@ public enum MonsterType {
     ENTEI("Entei", 1660, EntityType.SPIDER, DiffLevel.LEGENDARY),
     SUICUNE("Suicune", 1670, EntityType.SPIDER, DiffLevel.LEGENDARY),
     BARKIRA("Barkira", 1760, EntityType.SPIDER, DiffLevel.LEGENDARY),
+
+    FROST_ANT("Frost Ant", 15, EntityType.SILVERFISH, DiffLevel.SPECIAL),
+    FIRE_ANT("Fire Ant", 13, EntityType.SILVERFISH, DiffLevel.SPECIAL),
+    TOXIC_ANT("Toxic Ant", 14, EntityType.SILVERFISH, DiffLevel.SPECIAL),
+    IRON_GUARDIAN("Iron Guardian", 100, EntityType.ZOMBIE, DiffLevel.SPECIAL),
+    UNDEAD_HORSE("Undead Horse", 70, EntityType.HORSE, DiffLevel.SPECIAL),
+    SKELETON_HORSE("Skeleton Horse", 70, EntityType.HORSE, DiffLevel.SPECIAL),
+    BRONCO_OF_DEATH("Bronco of Death", 125, EntityType.HORSE, DiffLevel.SPECIAL),
+    PLAGUE_STALLION("Plague Stallion", 125, EntityType.HORSE, DiffLevel.SPECIAL),
     ;
 
     public final String name;
@@ -128,22 +145,61 @@ public enum MonsterType {
     public final DiffLevel difficulty;
     public final Biome[] biomes;
 
+    public static final Map<EntityType, List<MonsterType>> TYPES_MAP = new HashMap<>();
+
+    private static final int MAX_SPAWNS = 8;
+
     MonsterType(String name, int health, EntityType baseEntity, DiffLevel difficulty, Biome[] biomes) {
         this.name = name;
         this.health = health;
         this.baseEntity = baseEntity;
         this.difficulty = difficulty;
         this.biomes = biomes;
+
+        addType();
     }
 
     MonsterType(String name, int health, EntityType baseEntity, DiffLevel difficulty) {
         this(name, health, baseEntity, difficulty, null);
     }
 
-    public void spawn(Location loc, CreatureSpawnEvent.SpawnReason reason) {
+    public void addType() {
+        TYPES_MAP.putIfAbsent(baseEntity, new ArrayList<>());
+        TYPES_MAP.get(baseEntity).add(this);
+    }
+
+    public LivingEntity spawn(Location loc, CreatureSpawnEvent.SpawnReason reason) {
         Entity e = loc.getWorld().spawnEntity(loc, baseEntity, reason);
         LivingEntity livingEnt = (LivingEntity) e;
+
         livingEnt.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+        livingEnt.setHealth(health);
+
+        livingEnt.setCustomName(ChatColor.GOLD + name);
+
+        return livingEnt;
+    }
+
+    public static void randomSpawn(MonsterType type, Location loc, int tries, double chance) {
+        for(int i = 0; i < tries; ++i) {
+            if(Utils.randomBool(chance)) {
+                new SpawnTask(10 * i, type, loc);
+            }
+        }
+    }
+
+    public static boolean isMonster(LivingEntity livEnt) {
+        return getMonsterType(livEnt) != null;
+    }
+
+    public static MonsterType getMonsterType(LivingEntity livEnt) {
+        if(!TYPES_MAP.containsKey(livEnt.getType())) {
+            return null;
+        }
+        return TYPES_MAP.get(livEnt.getType()).stream().filter(mt ->
+            mt.health == livEnt.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() &&
+            (livEnt.getCustomName() == null ? "" : livEnt.getCustomName()).toLowerCase().endsWith(mt.name().toLowerCase())
+        ).findFirst().orElse(null);
     }
 
 

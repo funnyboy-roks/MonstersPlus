@@ -1,8 +1,6 @@
 package com.funnyboyroks.monstersplus.Data.structs;
 
 import com.funnyboyroks.monstersplus.Utils.ItemUtils;
-import com.funnyboyroks.monstersplus.Utils.Utils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -50,6 +48,7 @@ public enum TrophyType {
 
         item = new ItemStack(mat);
         ItemUtils.renameItemStack(item, this.displayName);
+        ItemUtils.addAllFlags(item);
     }
 
     public ItemStack toItemStack() {
