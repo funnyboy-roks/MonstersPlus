@@ -1,6 +1,7 @@
 package com.funnyboyroks.monstersplus.Data.structs;
 
 import com.funnyboyroks.monstersplus.Tasks.SpawnTask;
+import com.funnyboyroks.monstersplus.Utils.EntityUtils;
 import com.funnyboyroks.monstersplus.Utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
@@ -9,12 +10,10 @@ import org.bukkit.block.Biome;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum MonsterType {
     ZOMBIE_CHARGER("Zombie Charger", 30, EntityType.ZOMBIE, DiffLevel.EASY),
@@ -145,7 +144,6 @@ public enum MonsterType {
     public final DiffLevel difficulty;
     public final Biome[] biomes;
 
-    public static final Map<EntityType, List<MonsterType>> TYPES_MAP = new HashMap<>();
 
     private static final int MAX_SPAWNS = 8;
 
@@ -156,17 +154,23 @@ public enum MonsterType {
         this.difficulty = difficulty;
         this.biomes = biomes;
 
-        addType();
+//        addType(baseEntity);
     }
 
     MonsterType(String name, int health, EntityType baseEntity, DiffLevel difficulty) {
         this(name, health, baseEntity, difficulty, null);
     }
 
-    public void addType() {
-        TYPES_MAP.putIfAbsent(baseEntity, new ArrayList<>());
-        TYPES_MAP.get(baseEntity).add(this);
-    }
+
+//    public void addType(EntityType baseEntity) {
+//        if (TYPES_MAP.containsKey(baseEntity)) {
+//            TYPES_MAP.get(baseEntity).add(this);
+//        } else {
+//            List<MonsterType> types = new ArrayList<>();
+//            types.add(this);
+//            TYPES_MAP.put(baseEntity, types);
+//        }
+//    }
 
     public LivingEntity spawn(Location loc, CreatureSpawnEvent.SpawnReason reason) {
         Entity e = loc.getWorld().spawnEntity(loc, baseEntity, reason);
@@ -178,6 +182,14 @@ public enum MonsterType {
         livingEnt.setCustomName(ChatColor.GOLD + name);
 
         return livingEnt;
+    }
+
+    public TrophyType getTrophy() {
+        try {
+            return TrophyType.valueOf(this.name());
+        } catch (IllegalArgumentException ignored) { // If there's no trophy
+            return null;
+        }
     }
 
     public static void randomSpawn(MonsterType type, Location loc, int tries, double chance) {
@@ -193,14 +205,27 @@ public enum MonsterType {
     }
 
     public static MonsterType getMonsterType(LivingEntity livEnt) {
-        if(!TYPES_MAP.containsKey(livEnt.getType())) {
-            return null;
-        }
-        return TYPES_MAP.get(livEnt.getType()).stream().filter(mt ->
-            mt.health == livEnt.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() &&
-            (livEnt.getCustomName() == null ? "" : livEnt.getCustomName()).toLowerCase().endsWith(mt.name().toLowerCase())
+        return Arrays.stream(values()).filter(
+            mt ->
+                mt.baseEntity == livEnt.getType() &&
+                    mt.health == livEnt.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()
         ).findFirst().orElse(null);
     }
 
+    public static void updateMonsterMetaName(LivingEntity livEnt) {
+        MonsterType type = getMonsterType(livEnt);
+        if(type == null || livEnt instanceof Player || livEnt.getCustomName() == null) {
+            return;
+        }
+
+        String noColour = ChatColor.stripColor(livEnt.getCustomName());
+        if(
+            !EntityUtils.hasCustomMetadata(livEnt, "targetName") &&
+            !noColour.contains(Utils.FULL_BLOCK) &&
+            !noColour.contains(Utils.HALF_BLOCK)
+        ) {
+            EntityUtils.setCustomMetadata(livEnt, "targetName", noColour);
+        }
+    }
 
 }

@@ -1,6 +1,9 @@
 package com.funnyboyroks.monstersplus.Utils;
 
 import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
+import com.funnyboyroks.monstersplus.Tasks.CombinedTasks;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -15,7 +18,6 @@ public class MonsterUpdater {
     private static final int COLD_BOMB_RADIUS = 5;
     private static final int ROCK_SCORP_DAMAGE = 2;
     private static final double TRACK_STOP_CHANCE = 10;
-    private static final boolean TP_IN_SKYWORLD = false;
 
     /**
      * Handles:
@@ -84,32 +86,42 @@ public class MonsterUpdater {
                     EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 2, 80, 0.5);
                     break;
                 case LEGOLAS:
+                    legolasAttack(damager, target);
                     break;
                 case HAWKEYE:
+                    EntityUtils.teleport(damager, target, 0.15);
                     break;
                 case POCUS:
+                    pocusAttack(damager, target);
                     break;
                 case INFEARNO:
+                    infearnoAttack(damager, target);
                     break;
                 case HADAMARD:
+                    hadamardAttack(damager, target);
                     break;
                 case LESATH:
+                    lesathAttack(damager, target);
                     break;
                 case SHELOB:
+                case ARACHNE:
+                case CHARLOTTE:
+                    EntityUtils.damage(damager, target, 7);
                     break;
                 case RAIKOU:
+                    raikouAttack(damager, target);
                     break;
                 case ENTEI:
+                    enteiAttack(damager, target);
                     break;
                 case SUICUNE:
+                    suicuneAttack(damager, target);
                     break;
                 case BARKIRA:
+                    barkiraAttack(damager, target);
                     break;
                 case ACHILLES:
-                    break;
-                case ARACHNE:
-                    break;
-                case CHARLOTTE:
+                    EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 2, 120, 1);
                     break;
                 case SKELETON_SNIPER:
                     EntityUtils.potionEffectChance(target, PotionEffectType.BLINDNESS, 10, 50, 1);
@@ -229,6 +241,8 @@ public class MonsterUpdater {
         }
     }
 
+
+
     private static void respawnHolySkeleton(LivingEntity livEnt) {
         // TODO: RespawnEntityTask
     }
@@ -237,4 +251,86 @@ public class MonsterUpdater {
         // TODO: RespawnEntityTask
     }
 
+    private static void legolasAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 1, 8 * 20, 0.35); // Slowness 2 for 8 seconds 35%
+        EntityUtils.potionEffectChance(target, PotionEffectType.CONFUSION, 15, 12 * 20, 1); // Nausea 16 for 12 seconds 100%
+
+        // Disabled in original code.  Implemented here for future enabling, if chosen
+//        if(Utils.randomBool(0.5)) {
+//            EntityUtils.pull(target, damager.getLocation(), 3);
+//        }
+    }
+
+    private static void pocusAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.teleport(damager, target);
+        EntityUtils.potionEffectChance(target, PotionEffectType.HARM, 2, 0, 1);
+        EntityUtils.potionEffectChance(target, PotionEffectType.WITHER, 4, 6 * 20, 1);
+    }
+
+
+    private static void infearnoAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.burn(target, 10 * 20); // Fire for 10 sec
+        EntityUtils.damage(damager, target, 7);
+        EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 1, 5 * 20, 1); // Slowness 2 5 sec 100%
+    }
+
+    private static void lesathAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.damage(damager, target, 6);
+        EntityUtils.potionEffectChance(target, PotionEffectType.POISON, 3, 6 * 20, 1); // Poison 4 6 sec 100%
+
+        Location loc = target.getLocation();
+        if(Utils.randomBool(0.5) && Utils.isSpawnableLocation(loc) && loc.getBlock().isEmpty()){
+            CombinedTasks.PlaceAndClean(Material.COBWEB, loc, 0, 60);
+        }
+    }
+
+    private static void hadamardAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.damage(damager, target, 5);
+        EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 2, 10 * 20, 1); // Slowness 3 10 sec 100%
+        EntityUtils.potionEffectChance(target, PotionEffectType.CONFUSION, 20, 60 * 20, 1); // Nausea 21 1 min 100%
+        EntityUtils.potionEffectChance(target, PotionEffectType.POISON, 2, 10 * 20, 1); // Poison 3 10 sec 100%
+    }
+
+    private static void raikouAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.damage(damager, target, 6);
+        if(Utils.randomBool(0.75)) {
+            Utils.lightning(target.getLocation());
+            Utils.lightning(target.getLocation());
+            EntityUtils.damage(damager, target, 3);
+        }
+    }
+
+    private static void enteiAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.damage(damager, target, 6);
+        EntityUtils.burn(target, 8 * 20);
+        if(Utils.randomBool(0.4) &&
+            Utils.isSpawnableLocation(target.getLocation()) &&
+            target.getLocation().getBlock().isEmpty() &&
+            (target instanceof Player) &&
+            Utils.isBuildLocation((Player) target, target.getLocation())
+        ) {
+            CombinedTasks.PlaceAndClean(Material.LAVA, target.getLocation(), 0, 60);
+        }
+    }
+
+    private static void suicuneAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.damage(damager, target, 8);
+        EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 1, 10 * 20, 1);
+        EntityUtils.potionEffectChance(target, PotionEffectType.SLOW_DIGGING, 2, 8 * 20, 1);
+        if(Utils.randomBool(0.33)) {
+            createIceRing(target, 2, true);
+        }
+    }
+
+    private static void createIceRing(LivingEntity target, int second, boolean useSlow) {
+        // TODO: write this (https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java#L448)
+    }
+
+    private static void barkiraAttack(LivingEntity damager, LivingEntity target) {
+        EntityUtils.damage(damager, target, 6);
+        if (Utils.randomBool(0.5)) {
+            target.getLocation().createExplosion(1.6F, false, false);
+        }
+
+    }
 }

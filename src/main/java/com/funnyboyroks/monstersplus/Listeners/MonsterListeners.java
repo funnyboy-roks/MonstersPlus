@@ -1,13 +1,41 @@
 package com.funnyboyroks.monstersplus.Listeners;
 
+import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
+import com.funnyboyroks.monstersplus.Utils.MonsterUpdater;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class MonsterListeners implements Listener {
 
-
-
     @EventHandler(priority = EventPriority.NORMAL)
-    public void
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        boolean isProjectile = false;
+
+        if(event.isCancelled()) {
+            return;
+        }
+
+        Entity damager = event.getDamager();
+        Entity target = event.getEntity();
+        if(damager instanceof Projectile) {
+            damager = (LivingEntity) (((Projectile) damager).getShooter());
+            isProjectile = true;
+        }
+
+        if(damager instanceof LivingEntity && target instanceof LivingEntity) {
+            LivingEntity livEntDmg = (LivingEntity) damager;
+            LivingEntity livEntTgt = (LivingEntity) target;
+
+            MonsterUpdater.update(livEntDmg, livEntTgt, isProjectile);
+            MonsterType.updateMonsterMetaName(livEntDmg);
+            MonsterType.updateMonsterMetaName(livEntTgt);
+
+        }
+    }
+
 }

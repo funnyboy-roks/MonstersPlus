@@ -34,6 +34,7 @@ public class PlayerListeners implements Listener {
 
         Location loc = event.getBlock().getLocation();
         Player player = event.getPlayer();
+        System.out.println(event.getBlock().getType());
 
         if (
             !Utils.isSpawnableLocation(loc) || // Not spawnable loc
@@ -42,6 +43,7 @@ public class PlayerListeners implements Listener {
         ) {
             return;
         }
+
 
         switch (event.getBlock().getType()) {
             case DIRT:
@@ -65,7 +67,7 @@ public class PlayerListeners implements Listener {
                 }
                 break;
             case IRON_ORE:
-                if (Utils.randomBool(0.012)) { // 1.2% Chance
+                if (Utils.randomBool(0.012)) { // 1.2% Chance 
                     LivingEntity livEnt = MonsterType.IRON_GUARDIAN.spawn(loc, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
                     Zombie zombie = (Zombie) livEnt;
