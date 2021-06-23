@@ -14,8 +14,8 @@
         - [x] Check if the biome is a valid biome for the monster
         - [ ] [generateMonster](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterList.java#L454)
         - [x] getColouredMobName
-        - [ ] getTrophy
-        - [ ] dropTrophy
+        - [x] getTrophy
+        - [x] dropTrophy
         - [ ] dropPowerstones
     - [x] Checks for LivingEntities as monsters
     - [x] Name Meta Handling
@@ -27,7 +27,8 @@
       - [x] Enchantment
       - [x] Enchantment Level
       - [x] 22 Different Trophies
-      - [ ] Methods
+      - [x] Methods
+        - [x] Generate ItemStack
         - [x] Get ItemStack clone
   - [ ] [Event Handling](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterListener.java)
     - [ ] `onMobSpawner(CreatureSpawnEvent)` *Will probably merge with `onCreatureSpawn`*
@@ -35,6 +36,13 @@
     - [x] `onBlockBreak(BlockBreakEvent)`
     - [ ] `onEntityTarget(EntityTargetLivingEntityEvent)`
     - [ ] `onTame(EntityTameEvent)`
+    - [ ] Custom Events
+      - [ ] ZombieSpawnEvent
+      - [ ] SkeletonSpawnEvent
+      - [ ] CaveSpiderSpawnEvent
+      - [ ] SpiderSpawnEvent
+      - [ ] CreeperSpawnEvent
+      - [ ] HorseSpawnEvent
   - [ ] [MonsterUpdater](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java)
     - [ ] Attack**ing** Event Handling
       - [ ] `onEntityDamageByEntity(EntityDamageByEntityEvent)`

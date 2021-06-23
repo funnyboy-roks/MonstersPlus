@@ -1,12 +1,11 @@
 package com.funnyboyroks.monstersplus;
 
 import com.funnyboyroks.monstersplus.Commands.Monster;
-import com.funnyboyroks.monstersplus.Listeners.MainListeners;
+import com.funnyboyroks.monstersplus.Listeners.ServerListeners;
 import com.funnyboyroks.monstersplus.Listeners.MonsterListeners;
 import com.funnyboyroks.monstersplus.Listeners.PlayerListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -37,7 +36,7 @@ public final class MonstersPlus extends JavaPlugin {
     }
 
     public void registerListeners() {
-        Bukkit.getPluginManager().registerEvents(new MainListeners(), instance);
+        Bukkit.getPluginManager().registerEvents(new ServerListeners(), instance);
         Bukkit.getPluginManager().registerEvents(new MonsterListeners(), instance);
         Bukkit.getPluginManager().registerEvents(new PlayerListeners(), instance);
     }

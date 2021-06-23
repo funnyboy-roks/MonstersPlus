@@ -1,6 +1,9 @@
 package com.funnyboyroks.monstersplus.Data.structs;
 
 import com.funnyboyroks.monstersplus.Utils.ItemUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -46,9 +49,18 @@ public enum TrophyType {
         this.enchant = enchant;
         this.enchantLvl = enchantLvl;
 
-        item = new ItemStack(mat);
-        ItemUtils.renameItemStack(item, this.displayName);
-        ItemUtils.addAllFlags(item);
+        item = generateItemStack(mat);
+    }
+
+    public ItemStack generateItemStack(Material mat) {
+        ItemStack item = new ItemStack(mat);
+
+        ItemUtils.renameItemStack(item, displayName, true); // Set the name
+        ItemUtils.setItemStackLore(item, ChatColor.DARK_PURPLE + "Trophy"); // Set the lore
+
+        ItemUtils.forceEnchant(item, enchant, enchantLvl); // Add the enchant
+
+        return item;
     }
 
     public ItemStack toItemStack() {

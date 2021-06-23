@@ -5,16 +5,19 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.permissions.ServerOperator;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EntityUtils {
@@ -107,6 +110,10 @@ public class EntityUtils {
 
     public static boolean hasCustomMetadata(LivingEntity livEnt, String key) {
         return getCustomMetadata(livEnt, key) != null;
+    }
+
+    public static boolean nearbyOp(Location loc, int radius) {
+        return loc.getNearbyPlayers(radius).stream().anyMatch(Player::isOp);
     }
 
 }

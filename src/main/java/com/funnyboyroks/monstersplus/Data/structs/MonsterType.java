@@ -2,6 +2,7 @@ package com.funnyboyroks.monstersplus.Data.structs;
 
 import com.funnyboyroks.monstersplus.Tasks.SpawnTask;
 import com.funnyboyroks.monstersplus.Utils.EntityUtils;
+import com.funnyboyroks.monstersplus.Utils.ItemUtils;
 import com.funnyboyroks.monstersplus.Utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
@@ -13,7 +14,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public enum MonsterType {
     ZOMBIE_CHARGER("Zombie Charger", 30, EntityType.ZOMBIE, DiffLevel.EASY),
@@ -192,6 +197,18 @@ public enum MonsterType {
         }
     }
 
+    public void dropTrophy(LivingEntity livEnt) {
+        switch (difficulty) {
+            case LEGENDARY:
+            case SPECIAL:
+                TrophyType trophy = getTrophy();
+                if(trophy != null) {
+                    ItemUtils.dropItem(livEnt.getLocation(), trophy.toItemStack());
+                }
+
+        }
+    }
+
     public boolean isValidBiome(Biome biome) {
         if(biome == null || biomes == null) {
             return true;
@@ -213,6 +230,41 @@ public enum MonsterType {
             default:
                 return name;
         }
+    }
+
+    public static MonsterType generateMonster(EntityType type, Biome biome) {
+        DiffLevel chosenDiff;
+
+        double legSpawn = 1.5;
+        double hrdSpawn = 11 + legSpawn;
+        double medSpawn = 19 + hrdSpawn;
+        double easSpawn = 27 + medSpawn;
+
+        double rand = Math.random() * 100;
+
+        if (rand < legSpawn) {
+            chosenDiff = DiffLevel.LEGENDARY;
+        } else if (rand < hrdSpawn) {
+            chosenDiff = DiffLevel.HARD;
+        } else if (rand < medSpawn) {
+            chosenDiff = DiffLevel.MEDIUM;
+        } else if (rand < easSpawn) {
+            chosenDiff = DiffLevel.EASY;
+        } else {
+            return null;
+        }
+
+        List<MonsterType> valid = Arrays.stream(values())
+            .filter(
+                m ->
+                    m.difficulty == chosenDiff &&
+                        m.baseEntity == type &&
+                        m.isValidBiome(biome)
+            )
+            .collect(Collectors.toList());
+
+        return valid.get((int) (Math.random() * valid.size())); // Get random one
+
     }
 
     public static void randomSpawn(MonsterType type, Location loc, int tries, double chance) {
