@@ -5,4 +5,11 @@ api-version: 1.16
 prefix: Monsters+
 author: funnyboy_roks
 commands:
-
+  monster:
+    description: Summon a custom monster
+    usage: '/monster <type>'
+    permission: mplus.command.monster
+permissions:
+  mplus.command.monster:
+    description: The permission to summon a monster using `/monster`
+    default: op

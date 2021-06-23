@@ -192,6 +192,29 @@ public enum MonsterType {
         }
     }
 
+    public boolean isValidBiome(Biome biome) {
+        if(biome == null || biomes == null) {
+            return true;
+        }
+
+        return Arrays.stream(biomes).anyMatch(b -> b == biome);
+    }
+
+    public String getColouredMobName() {
+        switch(difficulty) {
+            case EASY:
+                return ChatColor.YELLOW + name;
+            case MEDIUM:
+                return ChatColor.GOLD + name;
+            case HARD:
+                return ChatColor.RED + name;
+            case LEGENDARY:
+                return ChatColor.DARK_PURPLE + name;
+            default:
+                return name;
+        }
+    }
+
     public static void randomSpawn(MonsterType type, Location loc, int tries, double chance) {
         for(int i = 0; i < tries; ++i) {
             if(Utils.randomBool(chance)) {

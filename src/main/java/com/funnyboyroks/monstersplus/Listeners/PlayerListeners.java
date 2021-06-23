@@ -67,10 +67,8 @@ public class PlayerListeners implements Listener {
                 }
                 break;
             case IRON_ORE:
-                if (Utils.randomBool(0.012)) { // 1.2% Chance 
+                if (Utils.randomBool(0.012)) { // 1.2% Chance
                     LivingEntity livEnt = MonsterType.IRON_GUARDIAN.spawn(loc, CreatureSpawnEvent.SpawnReason.CUSTOM);
-
-                    Zombie zombie = (Zombie) livEnt;
 
                     EntityUtils.addLongPotion(livEnt, PotionEffectType.INVISIBILITY, 1);
                     EntityUtils.addLongPotion(livEnt, PotionEffectType.SPEED, 1);
