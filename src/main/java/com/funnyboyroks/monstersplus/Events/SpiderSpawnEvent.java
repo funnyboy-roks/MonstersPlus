@@ -33,7 +33,6 @@ public class SpiderSpawnEvent {
         EntityUtils.setDropChances(livEnt, 0);
 
 
-
         switch (monsterType) {
             case BLACK_WIDOW: {
                 EntityUtils.addLongPotion(livEnt, PotionEffectType.SPEED, 1);

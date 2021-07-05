@@ -109,7 +109,8 @@ public class TntThrowTask {
                         }
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         public void setTaskId(int id) {
@@ -143,6 +144,7 @@ public class TntThrowTask {
                 tnt.setVelocity(adjustedVec);
                 tnt.setFuseTicks(blastTicks);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 }

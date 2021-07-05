@@ -2,9 +2,9 @@ package com.funnyboyroks.monstersplus;
 
 import com.funnyboyroks.monstersplus.Commands.Monster;
 import com.funnyboyroks.monstersplus.Commands.MonsterSpawnCommand;
-import com.funnyboyroks.monstersplus.Listeners.ServerListeners;
 import com.funnyboyroks.monstersplus.Listeners.MonsterListeners;
 import com.funnyboyroks.monstersplus.Listeners.PlayerListeners;
+import com.funnyboyroks.monstersplus.Listeners.ServerListeners;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;

@@ -200,7 +200,7 @@ public enum MonsterType {
             case LEGENDARY:
             case SPECIAL:
                 TrophyType trophy = getTrophy();
-                if(trophy != null) {
+                if (trophy != null) {
                     ItemUtils.dropItem(livEnt.getLocation(), trophy.toItemStack());
                 }
 
@@ -208,7 +208,7 @@ public enum MonsterType {
     }
 
     public boolean isValidBiome(Biome biome) {
-        if(biome == null || biomes == null) {
+        if (biome == null || biomes == null) {
             return true;
         }
 
@@ -216,7 +216,7 @@ public enum MonsterType {
     }
 
     public String getColouredMobName() {
-        switch(difficulty) {
+        switch (difficulty) {
             case EASY:
                 return ChatColor.YELLOW + name;
             case MEDIUM:
@@ -266,8 +266,8 @@ public enum MonsterType {
     }
 
     public static void randomSpawn(MonsterType type, Location loc, int tries, double chance) {
-        for(int i = 0; i < tries; ++i) {
-            if(Utils.randomBool(chance)) {
+        for (int i = 0; i < tries; ++i) {
+            if (Utils.randomBool(chance)) {
                 new SpawnTask(10 * i, type, loc);
             }
         }
@@ -278,7 +278,7 @@ public enum MonsterType {
     }
 
     public static MonsterType getMonsterType(LivingEntity livEnt) {
-        if(EntityUtils.hasCustomMetadata(livEnt, "MonstersPlusName")) {
+        if (EntityUtils.hasCustomMetadata(livEnt, "MonstersPlusName")) {
             return valueOf(EntityUtils.getCustomMetadata(livEnt, "MonstersPlusName"));
         }
         return Arrays.stream(values()).filter(
@@ -290,15 +290,15 @@ public enum MonsterType {
 
     public static void updateMonsterMetaName(LivingEntity livEnt) {
         MonsterType type = getMonsterType(livEnt);
-        if(type == null || livEnt instanceof Player || livEnt.getCustomName() == null) {
+        if (type == null || livEnt instanceof Player || livEnt.getCustomName() == null) {
             return;
         }
 
         String noColour = ChatColor.stripColor(livEnt.getCustomName());
-        if(
+        if (
             !EntityUtils.hasCustomMetadata(livEnt, "targetName") &&
-            !noColour.contains(Utils.FULL_BLOCK) &&
-            !noColour.contains(Utils.HALF_BLOCK)
+                !noColour.contains(Utils.FULL_BLOCK) &&
+                !noColour.contains(Utils.HALF_BLOCK)
         ) {
             EntityUtils.setCustomMetadata(livEnt, "targetName", noColour);
         }

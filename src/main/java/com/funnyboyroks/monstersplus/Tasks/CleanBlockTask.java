@@ -27,7 +27,7 @@ public class CleanBlockTask {
         this.task = Bukkit.getScheduler().scheduleSyncDelayedTask(
             MonstersPlus.instance,
             () -> {
-                if(loc.getBlock().getType().equals(fromMat)) {
+                if (loc.getBlock().getType().equals(fromMat)) {
                     loc.getBlock().setType(toMat);
                 }
             },

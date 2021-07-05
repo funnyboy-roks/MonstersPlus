@@ -1,59 +1,62 @@
 # ToDo
 
 - [ ] Monsters
-  - [x] MonsterTypes
-    - [x] Enum
-      - [x] Name
-      - [x] Health
-      - [x] baseEntity
-      - [x] Difficulty
-      - [x] [Biomes]
-      - [x] 113 Different Monsters
-      - [x] Methods
-        - [x] Spawn the entity
-        - [x] Check if the biome is a valid biome for the monster
-        - [ ] [generateMonster](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterList.java#L454)
-        - [x] getColouredMobName
-        - [x] getTrophy
-        - [x] dropTrophy
-        - [ ] dropPowerstones
-    - [x] Checks for LivingEntities as monsters
-    - [x] Name Meta Handling
-  - [ ] [Trophies](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterList.java#L172)
-    - [x] Enum
-      - [x] MonsterType
-      - [x] Display Name
-      - [x] Item
-      - [x] Enchantment
-      - [x] Enchantment Level
-      - [x] 22 Different Trophies
-      - [x] Methods
-        - [x] Generate ItemStack
-        - [x] Get ItemStack clone
-  - [x] [Event Handling](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterListener.java)
-    - [x] `onMobSpawner(CreatureSpawnEvent)` *Will probably merge with `onCreatureSpawn`*
-    - [x] `onCreatureSpawn(CreatureSpawnEvent)`
-    - [x] `onBlockBreak(BlockBreakEvent)`
-    - [x] `onEntityTarget(EntityTargetLivingEntityEvent)`
-    - [x] `onTame(EntityTameEvent)`
-    - [x] Custom Events
-      - [x] ZombieSpawnEvent
-      - [x] SkeletonSpawnEvent
-      - [x] ~~CaveSpiderSpawnEvent~~ *Unused event- removed*
-      - [x] SpiderSpawnEvent
-      - [x] CreeperSpawnEvent
-      - [x] HorseSpawnEvent
-  - [x] [MonsterUpdater](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java)
-    - [x] Attack**ing** Event Handling
-      - [x] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
-      - [x] `onCreeperExplode(EntityExplodeEvent)`
-      - [x] `onProjectileFire(ProjectileLaunchEvent)`
-    - [x] Attack**ed** Event Handling
-      - [x] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
-      - [x] `onEntityDeath(EntityDeathEvent)`
-  - [ ] Commands
-    - [ ] [/customspawn](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterSpawnCommand.java)
-    - [ ] [/faq [topic]](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/FAQ.java)
-      - [ ] Topics: Money, Market, Monsters, Quests, Jobs, Survivalist, Miner, Warrior, Fisherman, WitchDoctor, Farmer, Enchanter, Builder, Blacksmith, Disguise, Customarrows, Oreradar, Tracking, Brewing, Fishing, Jobenchant, Customenchant, ArrowRecipes, Farmer Recipes, Builder Recipes, Trophy, Powerstones, ExpTrading, Bombs, Enderdragonspawning, Challenge, Ranks, Minigames
-      - [ ] If topic not specified, list them
+    - [x] MonsterTypes
+        - [x] Enum
+            - [x] Name
+            - [x] Health
+            - [x] baseEntity
+            - [x] Difficulty
+            - [x] [Biomes]
+            - [x] 113 Different Monsters
+            - [x] Methods
+                - [x] Spawn the entity
+                - [x] Check if the biome is a valid biome for the monster
+                - [ ] [generateMonster](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterList.java#L454)
+                - [x] getColouredMobName
+                - [x] getTrophy
+                - [x] dropTrophy
+                - [ ] dropPowerstones
+        - [x] Checks for LivingEntities as monsters
+        - [x] Name Meta Handling
+    - [ ] [Trophies](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterList.java#L172)
+        - [x] Enum
+            - [x] MonsterType
+            - [x] Display Name
+            - [x] Item
+            - [x] Enchantment
+            - [x] Enchantment Level
+            - [x] 22 Different Trophies
+            - [x] Methods
+                - [x] Generate ItemStack
+                - [x] Get ItemStack clone
+    - [x] [Event Handling](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterListener.java)
+        - [x] `onMobSpawner(CreatureSpawnEvent)` *Will probably merge with `onCreatureSpawn`*
+        - [x] `onCreatureSpawn(CreatureSpawnEvent)`
+        - [x] `onBlockBreak(BlockBreakEvent)`
+        - [x] `onEntityTarget(EntityTargetLivingEntityEvent)`
+        - [x] `onTame(EntityTameEvent)`
+        - [x] Custom Events
+            - [x] ZombieSpawnEvent
+            - [x] SkeletonSpawnEvent
+            - [x] ~~CaveSpiderSpawnEvent~~ *Unused event- removed*
+            - [x] SpiderSpawnEvent
+            - [x] CreeperSpawnEvent
+            - [x] HorseSpawnEvent
+    - [x] [MonsterUpdater](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java)
+        - [x] Attack**ing** Event Handling
+            - [x] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
+            - [x] `onCreeperExplode(EntityExplodeEvent)`
+            - [x] `onProjectileFire(ProjectileLaunchEvent)`
+        - [x] Attack**ed** Event Handling
+            - [x] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
+            - [x] `onEntityDeath(EntityDeathEvent)`
+    - [ ] Commands
+        - [ ] [/customspawn](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterSpawnCommand.java)
+        - [ ] [/faq [topic]](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/FAQ.java)
+            - [ ] Topics: Money, Market, Monsters, Quests, Jobs, Survivalist, Miner, Warrior, Fisherman, WitchDoctor,
+              Farmer, Enchanter, Builder, Blacksmith, Disguise, Customarrows, Oreradar, Tracking, Brewing, Fishing,
+              Jobenchant, Customenchant, ArrowRecipes, Farmer Recipes, Builder Recipes, Trophy, Powerstones, ExpTrading,
+              Bombs, Enderdragonspawning, Challenge, Ranks, Minigames
+            - [ ] If topic not specified, list them
 - [ ] Jobs

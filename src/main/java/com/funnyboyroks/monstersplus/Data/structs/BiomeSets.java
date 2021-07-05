@@ -3,7 +3,8 @@ package com.funnyboyroks.monstersplus.Data.structs;
 import org.bukkit.block.Biome;
 
 public class BiomeSets {
-    public static Biome[] COLD = new Biome[] {
+
+    public static Biome[] COLD = new Biome[]{
         Biome.SNOWY_TAIGA,
         Biome.SNOWY_TAIGA_MOUNTAINS,
         Biome.TAIGA_HILLS,
@@ -15,11 +16,11 @@ public class BiomeSets {
         Biome.COLD_OCEAN,
         Biome.DEEP_COLD_OCEAN,
     };
-    public static Biome[] DESERT = new Biome[] {
+    public static Biome[] DESERT = new Biome[]{
         Biome.DESERT,
         Biome.DESERT_HILLS,
     };
-    public static Biome[] HOT = new Biome[] {
+    public static Biome[] HOT = new Biome[]{
         Biome.DESERT,
         Biome.DESERT_HILLS,
         Biome.BADLANDS,
@@ -31,18 +32,18 @@ public class BiomeSets {
         Biome.NETHER_WASTES,
         Biome.SOUL_SAND_VALLEY,
     };
-    public static Biome[] HELL = new Biome[] {
+    public static Biome[] HELL = new Biome[]{
         Biome.CRIMSON_FOREST,
         Biome.WARPED_FOREST,
         Biome.BASALT_DELTAS,
         Biome.NETHER_WASTES,
         Biome.SOUL_SAND_VALLEY,
     };
-    public static Biome[] SWAMP = new Biome[] {
+    public static Biome[] SWAMP = new Biome[]{
         Biome.SWAMP,
         Biome.SWAMP_HILLS,
     };
-    public static Biome[] EXTREME_HILLS = new Biome[] {
+    public static Biome[] EXTREME_HILLS = new Biome[]{
         Biome.SNOWY_MOUNTAINS,
         Biome.GRAVELLY_MOUNTAINS,
         Biome.TAIGA_MOUNTAINS,
@@ -50,11 +51,11 @@ public class BiomeSets {
         Biome.SNOWY_TAIGA_MOUNTAINS,
         Biome.MOUNTAINS,
     };
-    public static Biome[] RIVER = new Biome[] {
+    public static Biome[] RIVER = new Biome[]{
         Biome.RIVER,
         Biome.FROZEN_RIVER,
     };
-    public static Biome[] WATERFRONT = new Biome[] {
+    public static Biome[] WATERFRONT = new Biome[]{
         Biome.RIVER,
         Biome.DEEP_LUKEWARM_OCEAN,
         Biome.DEEP_OCEAN,

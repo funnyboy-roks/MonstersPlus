@@ -29,21 +29,21 @@ public class SpawnTask {
         this.task = Bukkit.getScheduler().scheduleSyncDelayedTask(
             MonstersPlus.instance,
             () -> {
-            LivingEntity livEnt = type.spawn(loc, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                LivingEntity livEnt = type.spawn(loc, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-            double speed = 0;
-            switch(type) {
-                case FIRE_ANT:
-                    speed = 1.3;
-                    break;
-                case TOXIC_ANT:
-                    speed = 1.1;
-                    break;
-                case FROST_ANT:
-                    speed = 0.9;
-                    break;
-            }
-            livEnt.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(speed);
+                double speed = 0;
+                switch (type) {
+                    case FIRE_ANT:
+                        speed = 1.3;
+                        break;
+                    case TOXIC_ANT:
+                        speed = 1.1;
+                        break;
+                    case FROST_ANT:
+                        speed = 0.9;
+                        break;
+                }
+                livEnt.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(speed);
 
             },
             ticks

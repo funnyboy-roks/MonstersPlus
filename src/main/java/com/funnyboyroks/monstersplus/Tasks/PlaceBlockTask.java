@@ -1,13 +1,9 @@
 package com.funnyboyroks.monstersplus.Tasks;
 
-import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 
 public class PlaceBlockTask {
 
