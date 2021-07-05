@@ -14,9 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -280,6 +278,9 @@ public enum MonsterType {
     }
 
     public static MonsterType getMonsterType(LivingEntity livEnt) {
+        if(EntityUtils.hasCustomMetadata(livEnt, "MonstersPlusName")) {
+            return valueOf(EntityUtils.getCustomMetadata(livEnt, "MonstersPlusName"));
+        }
         return Arrays.stream(values()).filter(
             mt ->
                 mt.baseEntity == livEnt.getType() &&

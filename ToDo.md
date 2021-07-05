@@ -30,27 +30,27 @@
       - [x] Methods
         - [x] Generate ItemStack
         - [x] Get ItemStack clone
-  - [ ] [Event Handling](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterListener.java)
-    - [ ] `onMobSpawner(CreatureSpawnEvent)` *Will probably merge with `onCreatureSpawn`*
-    - [ ] `onCreatureSpawn(CreatureSpawnEvent)`
+  - [x] [Event Handling](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterListener.java)
+    - [x] `onMobSpawner(CreatureSpawnEvent)` *Will probably merge with `onCreatureSpawn`*
+    - [x] `onCreatureSpawn(CreatureSpawnEvent)`
     - [x] `onBlockBreak(BlockBreakEvent)`
-    - [ ] `onEntityTarget(EntityTargetLivingEntityEvent)`
-    - [ ] `onTame(EntityTameEvent)`
-    - [ ] Custom Events
-      - [ ] ZombieSpawnEvent
-      - [ ] SkeletonSpawnEvent
-      - [ ] CaveSpiderSpawnEvent
-      - [ ] SpiderSpawnEvent
-      - [ ] CreeperSpawnEvent
-      - [ ] HorseSpawnEvent
-  - [ ] [MonsterUpdater](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java)
-    - [ ] Attack**ing** Event Handling
-      - [ ] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
-      - [ ] `onCreeperExplode(EntityExplodeEvent)`
-      - [ ] `onProjectileFire(ProjectileLaunchEvent)`
-    - [ ] Attack**ed** Event Handling
-      - [ ] `onEntityDeath(EntityDeathEvent)`
-      - [ ] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
+    - [x] `onEntityTarget(EntityTargetLivingEntityEvent)`
+    - [x] `onTame(EntityTameEvent)`
+    - [x] Custom Events
+      - [x] ZombieSpawnEvent
+      - [x] SkeletonSpawnEvent
+      - [x] ~~CaveSpiderSpawnEvent~~ *Unused event- removed*
+      - [x] SpiderSpawnEvent
+      - [x] CreeperSpawnEvent
+      - [x] HorseSpawnEvent
+  - [x] [MonsterUpdater](https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java)
+    - [x] Attack**ing** Event Handling
+      - [x] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
+      - [x] `onCreeperExplode(EntityExplodeEvent)`
+      - [x] `onProjectileFire(ProjectileLaunchEvent)`
+    - [x] Attack**ed** Event Handling
+      - [x] `onEntityDamageByEntity(EntityDamageByEntityEvent)`
+      - [x] `onEntityDeath(EntityDeathEvent)`
   - [ ] Commands
     - [ ] [/customspawn](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/monsters/MonsterSpawnCommand.java)
     - [ ] [/faq [topic]](https://github.com/nathank33/MonstersPlus/blob/master/src/me/coolade/monstersplus/FAQ.java)

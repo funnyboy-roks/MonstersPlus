@@ -3,7 +3,9 @@ package com.funnyboyroks.monstersplus.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Damageable;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -26,7 +28,7 @@ public class ItemUtils {
     }
 
     public static ItemStack renameItemStack(ItemStack stack, String name) {
-        return renameItemStack(stack, name);
+        return renameItemStack(stack, name, false);
     }
 
     public static ItemStack setItemStackLore(ItemStack stack, Component... name) {
@@ -77,6 +79,12 @@ public class ItemUtils {
 
     public static void forceEnchant(ItemStack stack, Enchantment ench, int level) {
         stack.addUnsafeEnchantment(ench, level);
+    }
+
+    public static ItemStack item(Material mat, String name) {
+        ItemStack stack = new ItemStack(mat);
+        renameItemStack(stack, name);
+        return stack;
     }
 
 }

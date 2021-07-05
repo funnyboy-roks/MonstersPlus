@@ -9,6 +9,8 @@ commands:
     description: Summon a custom monster
     usage: '/monster <type>'
     permission: mplus.command.monster
+  customspawn:
+    description: Spawn Custom Monsters.
 permissions:
   mplus.command.monster:
     description: The permission to summon a monster using `/monster`

@@ -3,6 +3,11 @@ package com.funnyboyroks.monstersplus.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Utils {
 
     public static final String FULL_BLOCK = "\u2588";
@@ -10,7 +15,7 @@ public class Utils {
 
 
     public static boolean isSpawnableLocation(Location loc) {
-        if(!loc.getWorld().getName().equalsIgnoreCase("world")) { // Not in 'world'
+        if (!loc.getWorld().getName().equalsIgnoreCase("world")) { // Not in 'world'
             return false;
         }
 
@@ -22,11 +27,11 @@ public class Utils {
     }
 
     public static boolean isBuildLocation(Player player, Location loc) {
-        if(!loc.getWorld().getName().equalsIgnoreCase("world")) {
+        if (!loc.getWorld().getName().equalsIgnoreCase("world")) {
             return false;
         }
 
-        if(player.isOp()) {
+        if (player.isOp()) {
             return true;
         }
 
@@ -42,7 +47,7 @@ public class Utils {
     }
 
     public static boolean randomBool(double chance) {
-         return Math.random() < chance;
+        return Math.random() < chance;
     }
 
     public static void lightning(Location loc) {
@@ -50,9 +55,37 @@ public class Utils {
     }
 
     public static void lightning(Location loc, double chance) {
-        if(randomBool(chance)) {
+        if (randomBool(chance)) {
             loc.getWorld().strikeLightning(loc);
         }
     }
 
+    public static List<String> filterEnum(Enum[] enums, String v) {
+        return Arrays.stream(enums)
+            .map(Enum::name)
+            .map(String::toLowerCase)
+            .map(s -> s.replaceAll("_", "-"))
+            .filter(s -> s.startsWith(
+                v
+                    .toLowerCase()
+                    .replaceAll("_", "-")
+                )
+            )
+            .collect(Collectors.toList());
+    }
+
+    public static int randomInt(int range, int offset) {
+        return (int) (Math.random() * range) + offset;
+    }
+
+    public static int randomInt(int range) {
+        return randomInt(range, 0);
+    }
+
+
+    public static void messagePlayers(String msg, Collection<Player> nearbyPlayers) {
+        nearbyPlayers.forEach(
+            p -> LangUtils.sendMessage(p, msg)
+        );
+    }
 }
