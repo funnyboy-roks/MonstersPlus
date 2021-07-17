@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +17,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffectType;
 
@@ -103,6 +106,20 @@ public class PlayerListeners implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerJoin(PlayerJoinEvent event) {
         MonstersPlus.getDataHandler().playerJoin(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler()
+    public void onArrowShoot(EntityShootBowEvent event) {
+        if(event.getEntity() instanceof Player){
+            MonstersPlus.getCustomItemHandler().playerArrowShoot(event, (Player) event.getEntity());
+        }
+    }
+
+    @EventHandler()
+    public void onArrowHit(ProjectileHitEvent event) {
+        if(event.getEntity().getType() == EntityType.ARROW) {
+            MonstersPlus.getCustomItemHandler().arrowHit(event);
+        }
     }
 
 }

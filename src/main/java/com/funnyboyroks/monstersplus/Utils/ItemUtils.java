@@ -3,6 +3,7 @@ package com.funnyboyroks.monstersplus.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -119,6 +120,25 @@ public class ItemUtils {
         stack.setItemMeta(meta);
         renameItemStack(stack, name, true);
         return stack;
+    }
+
+    public static String getName(ItemStack stack) {
+        return
+            stack.getItemMeta().displayName() == null ?
+                "" :
+                ChatColor.stripColor(LegacyComponentSerializer.legacySection().serialize(stack.getItemMeta().displayName()));
+
+    }
+
+    public static List<String> getLore(ItemStack stack) {
+        return stack.getItemMeta()
+            .lore()
+            .stream()
+            .map(l -> ((TextComponent) l))
+            .map(LegacyComponentSerializer.legacySection()::serialize)
+            .map(ChatColor::stripColor)
+            .map(String::toLowerCase)
+            .collect(Collectors.toList());
     }
 
 }

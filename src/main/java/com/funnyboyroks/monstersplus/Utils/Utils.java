@@ -42,6 +42,22 @@ public class Utils {
         return true;
     }
 
+    public static boolean isPvpLocation(Location loc) {
+        // TODO: WorldGuard Integration
+
+        // TODO: Factions Integration
+
+        return true;
+    }
+
+    public static boolean isPearlAllowed(Player shooter, Location loc) {
+        if(shooter.isOp()) return true;
+
+        // TODO: WorldGuard Integration
+
+        return true;
+    }
+
     public static boolean randomBool() {
         return randomBool(0.5);
     }
@@ -88,4 +104,5 @@ public class Utils {
             p -> LangUtils.sendMessage(p, msg)
         );
     }
+
 }

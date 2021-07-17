@@ -597,7 +597,7 @@ public class MonsterUpdater {
         }
     }
 
-    private static void createIceRing(LivingEntity target, int second, boolean useSlow) {
+    public static void createIceRing(LivingEntity target, int second, boolean useSlow) {
         // TODO: write this (https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java#L448)
     }
 

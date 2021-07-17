@@ -30,8 +30,8 @@ public final class MonstersPlus extends JavaPlugin {
 
     public MonstersPlus() {
         instance = this;
-        jobHandler = new JobHandler();
         dataHandler = new DataHandler();
+        jobHandler = new JobHandler();
         customItemHandler = new CustomItemHandler();
         gson = new Gson();
         pluginData = dataHandler.getPluginData();

@@ -3,7 +3,6 @@ package com.funnyboyroks.monstersplus.Data.structs;
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import com.funnyboyroks.monstersplus.Utils.ItemUtils;
 import com.funnyboyroks.monstersplus.Utils.RecipeUtils;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -97,6 +96,7 @@ public enum CustomItem {
     private final ItemStack item;
     private final JobType job;
     private final int level;
+    private final String description;
     private final int powerstones;
 //    private String recipeDesc;
 
@@ -105,6 +105,7 @@ public enum CustomItem {
         this.item = item;
         this.job = job;
         this.level = level;
+        this.description = description;
         this.powerstones = powerstones;
 //        this.recipeDesc = recipeDesc;
 
@@ -119,10 +120,6 @@ public enum CustomItem {
 
     CustomItem(String name, String recipeStr, Material mat, int count, JobType job, int level, String description) {
         this(ItemUtils.item(mat, name, count), recipeStr, job, level, description, 0);
-    }
-
-    CustomItem(String name, String recipeStr, EntityType type, JobType job, int level) {
-        this(ItemUtils.spawner(type, name), recipeStr, job, level, null, 0);
     }
 
     CustomItem(String name, String recipeStr, EntityType type, JobType job, int level, int powerstones) {
@@ -199,24 +196,41 @@ public enum CustomItem {
         return pd.job == job && pd.jobLevel >= level;
     }
 
-    // TODO: Finish This
-//    /**
-//     * Check if a given itemstack matches the required values to count as this item.
-//     * @param stack ItemStack to check against
-//     * @return Whether it could be a valid value
-//     */
-//    public boolean matches(ItemStack stack) {
-//        ItemMeta thisMeta = item.getItemMeta();
-//        ItemMeta meta = stack.getItemMeta();
-//
-//        if(stack.getType() != item.getType()) {
-//            return false;
-//        }
-//
-//        return ((TextComponent) thisMeta.displayName())
-//
-//    }
+    /**
+     * Check if a given itemstack matches the required values to count as this item.
+     * @param stack ItemStack to check against
+     * @return Whether it could be a valid value
+     */
+    public boolean matches(ItemStack stack) {
+        ItemMeta thisMeta = item.getItemMeta();
+        ItemMeta meta = stack.getItemMeta();
+
+        if(stack.getType() != item.getType() || !meta.hasLore()) {
+            return false;
+        }
+
+        boolean matchLore = (
+            description == null ||
+            ItemUtils.getLore(stack).contains(description.replaceAll("&[a-f0-9klmnor]", "").toLowerCase())
+        ) && ItemUtils.getLore(stack).contains("monstersplus");
+
+        boolean matchName = ItemUtils
+            .getName(stack)
+            .toLowerCase()
+            .contains(
+                ItemUtils
+                    .getName(item)
+                    .toLowerCase()
+            );
+
+        return matchName && matchLore;
 
 
+    }
+
+
+    public ItemStack getItem() {
+        return item;
+    }
 }
 
