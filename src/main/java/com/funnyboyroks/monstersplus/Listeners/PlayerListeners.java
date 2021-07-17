@@ -1,6 +1,7 @@
 package com.funnyboyroks.monstersplus.Listeners;
 
 import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
+import com.funnyboyroks.monstersplus.MonstersPlus;
 import com.funnyboyroks.monstersplus.Utils.EntityUtils;
 import com.funnyboyroks.monstersplus.Utils.LangUtils;
 import com.funnyboyroks.monstersplus.Utils.Utils;
@@ -15,6 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffectType;
 
 public class PlayerListeners implements Listener {
@@ -33,7 +35,6 @@ public class PlayerListeners implements Listener {
 
         Location loc = event.getBlock().getLocation();
         Player player = event.getPlayer();
-        System.out.println(event.getBlock().getType());
 
         if (
             !Utils.isSpawnableLocation(loc) || // Not spawnable loc
@@ -97,6 +98,11 @@ public class PlayerListeners implements Listener {
                 }
                 break;
         }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        MonstersPlus.getDataHandler().playerJoin(event.getPlayer().getUniqueId());
     }
 
 }

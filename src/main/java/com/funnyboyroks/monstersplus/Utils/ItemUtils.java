@@ -1,12 +1,17 @@
 package com.funnyboyroks.monstersplus.Utils;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
@@ -22,8 +27,19 @@ public class ItemUtils {
         return stack;
     }
 
-    public static ItemStack renameItemStack(ItemStack stack, String name, boolean deserialise) {
-        return renameItemStack(stack, deserialise ? LegacyComponentSerializer.legacyAmpersand().deserialize(name) : Component.text(name));
+    public static ItemStack renameItemStack(ItemStack stack, Object o) {
+        if(o instanceof String) {
+            return renameItemStack(stack, o.toString(), false);
+        }
+
+        if(o instanceof Component) {
+            return renameItemStack(stack, (Component) o);
+        }
+        return null;
+    }
+
+    public static ItemStack renameItemStack(ItemStack stack, String name, boolean translate) {
+        return renameItemStack(stack, translate ? ChatColor.translateAlternateColorCodes('&', "&r" + name) : Component.text(name));
     }
 
     public static ItemStack renameItemStack(ItemStack stack, String name) {
@@ -37,9 +53,9 @@ public class ItemUtils {
         return stack;
     }
 
-    public static ItemStack setItemStackLore(ItemStack stack, List<Component> name) {
+    public static ItemStack setItemStackLore(ItemStack stack, List<Component> lore) {
         ItemMeta meta = stack.getItemMeta();
-        meta.lore(name);
+        meta.lore(lore);
         stack.setItemMeta(meta);
         return stack;
     }
@@ -49,7 +65,8 @@ public class ItemUtils {
             stack,
             Arrays
                 .stream(name)
-                .map(s -> LegacyComponentSerializer.legacyAmpersand().deserialize(s))
+                .map(s -> ChatColor.translateAlternateColorCodes('&', "&r" + s))
+                .map(Component::text)
                 .collect(Collectors.toList())
         );
     }
@@ -82,9 +99,25 @@ public class ItemUtils {
         stack.addUnsafeEnchantment(ench, level);
     }
 
+    public static ItemStack item(Material mat, String name, int count) {
+        ItemStack stack = new ItemStack(mat, count);
+        renameItemStack(stack, name, true);
+        return stack;
+    }
+
     public static ItemStack item(Material mat, String name) {
-        ItemStack stack = new ItemStack(mat);
-        renameItemStack(stack, name);
+        return item(mat, name, 1);
+    }
+
+    public static ItemStack spawner(EntityType type, String name) {
+        ItemStack stack = new ItemStack(Material.SPAWNER);
+        BlockStateMeta meta = (BlockStateMeta) stack.getItemMeta();
+        CreatureSpawner cs = (CreatureSpawner) meta.getBlockState();
+
+        cs.setSpawnedType(type);
+        meta.setBlockState(cs);
+        stack.setItemMeta(meta);
+        renameItemStack(stack, name, true);
         return stack;
     }
 
