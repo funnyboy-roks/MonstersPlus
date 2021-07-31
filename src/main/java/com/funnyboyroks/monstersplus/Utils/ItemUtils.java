@@ -15,7 +15,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,7 +112,7 @@ public class ItemUtils {
         return item(mat, name, 1);
     }
 
-    public static ItemStack spawner(EntityType type, String name) {
+    public static ItemStack spawner(EntityType type) {
         ItemStack stack = new ItemStack(Material.SPAWNER);
         BlockStateMeta meta = (BlockStateMeta) stack.getItemMeta();
         CreatureSpawner cs = (CreatureSpawner) meta.getBlockState();
@@ -118,8 +120,12 @@ public class ItemUtils {
         cs.setSpawnedType(type);
         meta.setBlockState(cs);
         stack.setItemMeta(meta);
-        renameItemStack(stack, name, true);
         return stack;
+
+    }
+
+    public static ItemStack spawner(EntityType type, String name) {
+        return renameItemStack(spawner(type), name, true);
     }
 
     public static String getName(ItemStack stack) {
@@ -131,6 +137,7 @@ public class ItemUtils {
     }
 
     public static List<String> getLore(ItemStack stack) {
+        if(stack.getItemMeta() == null || stack.getItemMeta().getLore() == null) return Collections.emptyList();
         return stack.getItemMeta()
             .lore()
             .stream()
@@ -139,6 +146,10 @@ public class ItemUtils {
             .map(ChatColor::stripColor)
             .map(String::toLowerCase)
             .collect(Collectors.toList());
+    }
+
+    public static boolean matchesPowerstone(ItemStack stack) {
+        return getLore(stack).contains("Powerstone");
     }
 
 }

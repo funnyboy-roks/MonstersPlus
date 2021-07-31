@@ -1,9 +1,10 @@
 package com.funnyboyroks.monstersplus.Data;
 
-import com.funnyboyroks.monstersplus.Data.structs.PlayerData;
+import com.funnyboyroks.monstersplus.Data.structs.OfflineMPPlayer;
 import com.funnyboyroks.monstersplus.Data.structs.PluginData;
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import java.io.File;
@@ -112,7 +113,15 @@ public class DataHandler implements Listener {
     }
 
     public void playerJoin(UUID uuid) {
-        pluginData.getPlayerMap().putIfAbsent(uuid, new PlayerData());
+        pluginData.getPlayerMap().putIfAbsent(uuid, new OfflineMPPlayer());
+    }
+
+    public OfflineMPPlayer getOfflinePlayer(UUID uuid) {
+        return pluginData.getPlayerData(uuid);
+    }
+
+    public OfflineMPPlayer getOfflinePlayer(Player player) {
+        return getOfflinePlayer(player.getUniqueId());
     }
 }
 

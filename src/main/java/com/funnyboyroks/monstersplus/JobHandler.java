@@ -2,9 +2,9 @@ package com.funnyboyroks.monstersplus;
 
 import com.funnyboyroks.monstersplus.Data.DataHandler;
 import com.funnyboyroks.monstersplus.Data.structs.JobType;
+import com.funnyboyroks.monstersplus.Data.structs.PlayerJob;
 import com.funnyboyroks.monstersplus.Data.structs.PluginData;
-
-import java.util.UUID;
+import org.bukkit.entity.Player;
 
 public class JobHandler {
 
@@ -17,5 +17,6 @@ public class JobHandler {
         this.dh = MonstersPlus.getDataHandler();
         this.pluginData = dh.getPluginData();
     }
+
 
 }

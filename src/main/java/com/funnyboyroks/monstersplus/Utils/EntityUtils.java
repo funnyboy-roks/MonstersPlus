@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -330,6 +331,42 @@ public class EntityUtils {
                     liftUpward((LivingEntity) e, power);
                 }
             });
+    }
+
+    public static int powerstoneCount(Player player) {
+        Inventory inv = player.getInventory();
+        ItemStack[] contents = inv.getContents();
+
+        int total = 0;
+        for (ItemStack stack : contents) {
+            if (ItemUtils.matchesPowerstone(stack)) {
+                ++total;
+            }
+        }
+        return total;
+    }
+
+    public static boolean removePowerstones(Player player, int count) {
+        if (player == null) return false;
+
+        Inventory inv = player.getInventory();
+        ItemStack[] contents = inv.getContents();
+
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack stack = contents[i];
+            if (stack.getAmount() > count) {
+                stack.setAmount(stack.getAmount() - count);
+                return true;
+            }
+            if (stack.getAmount() == count) {
+                inv.setItem(i, null);
+                return true;
+            }
+            count -= stack.getAmount();
+            inv.setItem(i, null);
+        }
+
+        return count > powerstoneCount(player);
     }
 
 

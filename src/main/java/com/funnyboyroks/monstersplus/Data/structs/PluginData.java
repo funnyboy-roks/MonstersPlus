@@ -6,17 +6,17 @@ import java.util.UUID;
 
 public class PluginData {
 
-    private final Map<UUID, PlayerData> playerMap;
+    private final Map<UUID, OfflineMPPlayer> playerMap;
 
     public PluginData() {
         playerMap = new HashMap<>();
     }
 
-    public Map<UUID, PlayerData> getPlayerMap() {
+    public Map<UUID, OfflineMPPlayer> getPlayerMap() {
         return playerMap;
     }
 
-    public PlayerData getPlayerData(UUID uuid) {
+    public OfflineMPPlayer getPlayerData(UUID uuid) {
         return playerMap.get(uuid);
     }
 

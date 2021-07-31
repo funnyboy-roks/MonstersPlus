@@ -1,6 +1,7 @@
 package com.funnyboyroks.monstersplus.Utils;
 
 import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -105,4 +106,7 @@ public class Utils {
         );
     }
 
+    public static <T> T choseRandom(T[] array) {
+        return array[randomInt(array.length)];
+    }
 }

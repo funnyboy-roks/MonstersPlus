@@ -1,25 +1,28 @@
 package com.funnyboyroks.monstersplus.Listeners;
 
-import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
+import com.funnyboyroks.monstersplus.Data.structs.*;
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import com.funnyboyroks.monstersplus.Utils.EntityUtils;
 import com.funnyboyroks.monstersplus.Utils.LangUtils;
+import com.funnyboyroks.monstersplus.Utils.TextUtils;
 import com.funnyboyroks.monstersplus.Utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 public class PlayerListeners implements Listener {
@@ -110,16 +113,91 @@ public class PlayerListeners implements Listener {
 
     @EventHandler()
     public void onArrowShoot(EntityShootBowEvent event) {
-        if(event.getEntity() instanceof Player){
+        if (event.getEntity() instanceof Player) {
             MonstersPlus.getCustomItemHandler().playerArrowShoot(event, (Player) event.getEntity());
         }
     }
 
     @EventHandler()
     public void onArrowHit(ProjectileHitEvent event) {
-        if(event.getEntity().getType() == EntityType.ARROW) {
+        if (event.getEntity().getType() == EntityType.ARROW) {
             MonstersPlus.getCustomItemHandler().arrowHit(event);
         }
+    }
+
+    @EventHandler()
+    public void onPlayerCraft(CraftItemEvent event) {
+        if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) return;
+
+        ItemStack stack = event.getRecipe().getResult();
+        CustomItem item = MonstersPlus.getCustomItemHandler().getCustomItem(stack);
+        Player player = (Player) event.getWhoClicked();
+
+        if (item == null || player.isOp()) return;
+
+        if (!item.canUse(player)) {
+            TextUtils.sendFormatted(
+                player,
+                "&(blue)Job: {&(white)%0} Required Level: {&(white)%1}",
+                item.getJob(),
+                item.getLevel()
+            );
+            event.setCancelled(true);
+            return;
+        }
+
+        int powerstones = EntityUtils.powerstoneCount(player);
+        if (powerstones < item.getPowerstones()) {
+            TextUtils.sendFormatted(
+                player,
+                "&(red)This enchantment costs {&(gold)%0} powerstone%1, you only have {&(gold)%2}.",
+                item.getPowerstones(),
+                item.getPowerstones() == 1 ? "" : "s",
+                powerstones
+            );
+            return;
+        }
+
+        EntityUtils.removePowerstones(player, item.getPowerstones());
+
+        player.updateInventory();
+
+    }
+
+    @EventHandler()
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (event.isCancelled()) return;
+
+        PlayerFishEvent.State state = event.getState();
+        Entity caught = event.getCaught();
+        Player player = event.getPlayer();
+        OfflineMPPlayer mpp = MonstersPlus.getDataHandler().getOfflinePlayer(player);
+
+        if(!mpp.hasJob(JobType.FISHERMAN)) return;
+
+        int lvl = mpp.getJob(JobType.FISHERMAN).getLevel();
+
+        if (
+            state == PlayerFishEvent.State.CAUGHT_FISH &&
+            (caught instanceof Item)
+        ) {
+            Item item = (Item) caught;
+            item.setItemStack(FishingItems.getFishedItem(lvl));
+        }
+
+    }
+
+    @EventHandler()
+    public void onPlayerEnchant(EnchantItemEvent event) {
+        if (event.isCancelled()) return;
+
+        Player player = event.getEnchanter();
+        OfflineMPPlayer mpp = MonstersPlus.getDataHandler().getOfflinePlayer(player);
+
+        if(!mpp.hasJob(JobType.ENCHANTER)) return;
+
+//        mpp.getJob(JobType.ENCHANTER).
+
     }
 
 }

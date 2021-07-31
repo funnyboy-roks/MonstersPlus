@@ -192,7 +192,7 @@ public enum CustomItem {
     }
 
     public boolean canUse(Player player) {
-        PlayerData pd = MonstersPlus.getPluginData().getPlayerData(player.getUniqueId());
+        OfflineMPPlayer pd = MonstersPlus.getPluginData().getPlayerData(player.getUniqueId());
         return pd.job == job && pd.jobLevel >= level;
     }
 

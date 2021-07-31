@@ -4,6 +4,7 @@ main: com.funnyboyroks.monstersplus.MonstersPlus
 api-version: 1.16
 prefix: Monsters+
 author: funnyboy_roks
+depend: [ WorldGuard, WorldEdit, Jobs, Factions, Vault ]
 commands:
   monster:
     description: Summon a custom monster

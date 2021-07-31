@@ -34,6 +34,8 @@ public class CustomItemHandler {
     }
 
     public CustomItem getCustomItem(ItemStack stack) {
+        if(!stack.hasItemMeta()) return null;
+
         ItemMeta meta = stack.getItemMeta();
         List<Component> lore = meta.lore();
 
@@ -272,7 +274,7 @@ public class CustomItemHandler {
             case BLIZZARD_ARROW: {
                 arrow.getNearbyEntities(8, 8, 8).forEach(e -> {
                     if (!(e instanceof LivingEntity)) return;
-                        // Make sure that we arent changing the shooters speed
+                        // Make sure that we arent changing the shooter's speed
                     if (!(e instanceof Player) || e.getUniqueId() != shooter.getUniqueId()) {
                         LivingEntity livEnt = (LivingEntity) e;
                         MonsterUpdater.createIceRing(livEnt, 3, false);
@@ -294,7 +296,7 @@ public class CustomItemHandler {
 
     /**
      * <b>THIS METHOD IS NOT COMPLETE.</b><br>
-     * I have honestly no idea what it's supposed to do. <br>
+     * I have honestly no idea what it's supposed to do, but it's not used. <br>
      * Original: ArrowListener#621
      *
      * @param player Player
