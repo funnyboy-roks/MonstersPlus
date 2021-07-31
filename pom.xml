@@ -62,17 +62,33 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
-        <repository> <!-- Vault API, Jobs -->
+        <repository> <!-- Vault API, Jobs, Saber Factions -->
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
+        </repository>
+        <repository> <!-- CoreProtect -->
+            <id>maven.playpro.com</id>
+            <url>https://maven.playpro.com/</url>
+        </repository>
+        <repository>
+            <id>maven.enginehub.org</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+        <repository> <!-- Lib's Disguises -->
+            <id>md_5-public</id>
+            <url>https://repo.md-5.net/content/groups/public/</url>
+        </repository>
+        <repository> <!-- ProtocolLib -->
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
+            <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.17.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency> <!-- Vault API --> <!-- http://milkbowl.github.io/VaultAPI/ -->
@@ -81,11 +97,42 @@
             <version>1.7</version>
             <scope>provided</scope>
         </dependency>
-        <dependency> <!-- JOBS --> <!-- https://github.com/Zrips/Jobs/wiki/API -->
+        <dependency> <!-- JOBS Reborn --> <!-- https://github.com/Zrips/Jobs/wiki/API -->
             <groupId>com.github.Zrips</groupId>
             <artifactId>Jobs</artifactId>
             <version>v4.17.2</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency> <!-- Saber Factions --> <!-- https://github.com/SaberLLC/Saber-Factions/wiki -->
+            <groupId>com.github.SaberLLC</groupId>
+            <artifactId>Saber-Factions</artifactId>
+            <version>2.4.0-RC</version>
+        </dependency>
+        <dependency> <!-- CoreProtect --> <!-- https://docs.coreprotect.net/api/ -->
+            <groupId>net.coreprotect</groupId>
+            <artifactId>coreprotect</artifactId>
+            <version>20.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>LibsDisguises</groupId>
+            <artifactId>LibsDisguises</artifactId>
+            <version>10.0.26</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
         </dependency>
     </dependencies>
 </project>
