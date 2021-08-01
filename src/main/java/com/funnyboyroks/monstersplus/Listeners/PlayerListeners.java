@@ -1,29 +1,39 @@
 package com.funnyboyroks.monstersplus.Listeners;
 
-import com.funnyboyroks.monstersplus.Data.structs.*;
+import com.funnyboyroks.monstersplus.CustomItemHandler;
+import com.funnyboyroks.monstersplus.Data.structs.CustomItem;
+import com.funnyboyroks.monstersplus.Data.structs.FishingItems;
+import com.funnyboyroks.monstersplus.Data.structs.JobType;
+import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
 import com.funnyboyroks.monstersplus.MonstersPlus;
-import com.funnyboyroks.monstersplus.Utils.EntityUtils;
-import com.funnyboyroks.monstersplus.Utils.LangUtils;
-import com.funnyboyroks.monstersplus.Utils.TextUtils;
-import com.funnyboyroks.monstersplus.Utils.Utils;
+import com.funnyboyroks.monstersplus.Tasks.PlaceBlockTask;
+import com.funnyboyroks.monstersplus.Utils.*;
+import com.gamingmesh.jobs.Jobs;
+import com.gamingmesh.jobs.container.Job;
+import com.gamingmesh.jobs.container.JobsPlayer;
+import me.libraryaddict.disguise.DisguiseAPI;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.EnchantItemEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.List;
 
 public class PlayerListeners implements Listener {
 
@@ -106,22 +116,22 @@ public class PlayerListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        MonstersPlus.getDataHandler().playerJoin(event.getPlayer().getUniqueId());
-    }
-
     @EventHandler()
     public void onArrowShoot(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
-            MonstersPlus.getCustomItemHandler().playerArrowShoot(event, (Player) event.getEntity());
+            CustomItemHandler.playerArrowShoot(event, (Player) event.getEntity());
         }
     }
 
     @EventHandler()
     public void onArrowHit(ProjectileHitEvent event) {
-        if (event.getEntity().getType() == EntityType.ARROW) {
-            MonstersPlus.getCustomItemHandler().arrowHit(event);
+        switch(event.getEntity().getType()) {
+            case ARROW:
+                CustomItemHandler.arrowHit(event);
+                break;
+            case EGG:
+                CustomItemHandler.eggHit(event);
+                break;
         }
     }
 
@@ -130,7 +140,7 @@ public class PlayerListeners implements Listener {
         if (event.isCancelled() || !(event.getWhoClicked() instanceof Player)) return;
 
         ItemStack stack = event.getRecipe().getResult();
-        CustomItem item = MonstersPlus.getCustomItemHandler().getCustomItem(stack);
+        CustomItem item = CustomItemHandler.getCustomItem(stack);
         Player player = (Player) event.getWhoClicked();
 
         if (item == null || player.isOp()) return;
@@ -171,11 +181,12 @@ public class PlayerListeners implements Listener {
         PlayerFishEvent.State state = event.getState();
         Entity caught = event.getCaught();
         Player player = event.getPlayer();
-        OfflineMPPlayer mpp = MonstersPlus.getDataHandler().getOfflinePlayer(player);
+        JobsPlayer jp = PlayerUtils.getJP(player);
+        Job job = Jobs.getJob(JobType.FISHERMAN.name);
 
-        if(!mpp.hasJob(JobType.FISHERMAN)) return;
+        if(!PlayerUtils.hasJob(jp, JobType.FISHERMAN)) return;
 
-        int lvl = mpp.getJob(JobType.FISHERMAN).getLevel();
+        int lvl = jp.getJobProgression(job).getLevel();
 
         if (
             state == PlayerFishEvent.State.CAUGHT_FISH &&
@@ -192,12 +203,251 @@ public class PlayerListeners implements Listener {
         if (event.isCancelled()) return;
 
         Player player = event.getEnchanter();
-        OfflineMPPlayer mpp = MonstersPlus.getDataHandler().getOfflinePlayer(player);
+        JobsPlayer jp = PlayerUtils.getJP(player);
 
-        if(!mpp.hasJob(JobType.ENCHANTER)) return;
+        if(!PlayerUtils.hasJob(jp, JobType.ENCHANTER)) return;
 
-//        mpp.getJob(JobType.ENCHANTER).
+        PlayerUtils.addJobXp(player.getUniqueId(), JobType.ENCHANTER, event.getExpLevelCost() * 12.5);
 
+    }
+
+    @EventHandler()
+    public void onRepair(InventoryClickEvent event) {
+        if (event.isCancelled()) return;
+
+        Player player = (Player) event.getWhoClicked();
+        if (player.getGameMode() != GameMode.SURVIVAL) return;
+
+        Inventory inv = event.getInventory();
+        int slot = event.getSlot();
+
+        if (inv instanceof AnvilInventory && slot == 2) {
+            int prevLvl = player.getLevel();
+            Bukkit.getScheduler().runTaskLater(
+                MonstersPlus.instance,
+                () -> {
+                    int diff = prevLvl - player.getLevel();
+                    List.of(JobType.ENCHANTER, JobType.BLACKSMITH)
+                        .forEach(
+                            (j) ->
+                                PlayerUtils.addJobXp(player.getUniqueId(), j, diff * 15)
+                        );
+                },
+                1L
+            );
+        }
+    }
+
+    @EventHandler()
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        if(
+            event.useInteractedBlock() == Event.Result.DENY || event.useItemInHand() == Event.Result.DENY ||
+                !event.hasBlock() ||
+                event.getAction() != Action.RIGHT_CLICK_BLOCK
+        ) return;
+
+        Player player = event.getPlayer();
+        ItemStack hand = event.getItem();
+        Block block = event.getClickedBlock();
+        World world = block.getWorld();
+        ExperienceManager em = new ExperienceManager(player);
+
+        switch(hand.getType()) {
+            case FLINT_AND_STEEL: {
+                if (!world.getName().toLowerCase().contains("end")) return;
+
+                if (block.getType() != Material.OBSIDIAN) return;
+                if (!PlayerUtils.hasJob(player, JobType.BUILDER) || PlayerUtils.getJobLvl(player, JobType.BUILDER) < 7) {
+                    TextUtils.sendFormatted(
+                        player,
+                        "&(red)You must be at least a level {&(gold)%0 builder} to spawn an EnderDragon",
+                        7
+                    );
+                    return;
+                }
+
+                int xd = 0;
+                int zd = 0;
+                if (block.getRelative(1, 0, 0).getType() == Material.OBSIDIAN) {
+                    xd = 1;
+                } else if (block.getRelative(-1, 0, 0).getType() == Material.OBSIDIAN) {
+                    xd = -1;
+                } else if (block.getRelative(0, 0, 1).getType() == Material.OBSIDIAN) {
+                    zd = 1;
+                } else if (block.getRelative(0, 0, -1).getType() == Material.OBSIDIAN) {
+                    zd = -1;
+                } else {
+                    return;
+                }
+
+                int count = 0;
+                for (int i = 0; i < 5; ++i) {
+                    for (int j = 0; j < 3; ++j) {
+                        if (block.getRelative(xd * j, i, zd * j).getType() == Material.OBSIDIAN) {
+                            ++count;
+                        }
+                    }
+                }
+                if (count != 11) return;
+
+                if (Cooldown.onCooldown(player.getUniqueId(), "enderspawning") && !player.isOp()) {
+                    TextUtils.sendFormatted(
+                        player,
+                        "&(gold)You can use this in {&(red)%0}.",
+                        Cooldown.getTimeFormatted(player.getUniqueId(), "enderspawning")
+                    );
+                    return;
+                }
+
+                Cooldown.start(player.getUniqueId(), "enderspawning", TimeInterval.HOUR);
+
+                Block[] airToFire = new Block[]{
+                    block.getRelative(xd, 1, zd),
+                    block.getRelative(xd * 2, 1, zd * 2),
+                    block.getRelative(xd, 3, zd),
+                    block.getRelative(xd * 2, 3, zd * 2),
+                    };
+
+                for (Block b : airToFire) {
+                    if (b.isEmpty()) {
+                        b.setType(Material.FIRE);
+                    }
+                }
+
+                for (int i = 1; i < 4; ++i) {
+                    Bukkit.getScheduler().runTaskLater(
+                        MonstersPlus.instance,
+                        () -> airToFire[2].getLocation().createExplosion(2F),
+                        20 * i
+                    );
+                }
+
+                for (int i = 0; i < 5; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        Block b = block.getRelative(xd * j, i, zd * j);
+                        new PlaceBlockTask(Material.AIR, b.getLocation(), 80);
+                    }
+                }
+
+                Bukkit.getScheduler().runTaskLater(
+                    MonstersPlus.instance,
+                    () ->
+                        world
+                            .spawnEntity(
+                                block
+                                    .getRelative(0, 10, 0)
+                                    .getLocation(),
+                                EntityType.ENDER_DRAGON
+                            ),
+                    80
+                );
+                return;
+            }
+            case GLASS_BOTTLE:
+            case BUCKET: {
+                if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                    return;
+                }
+                CustomItem item = CustomItemHandler.getCustomItem(hand);
+                if (item == null) return;
+                switch (item) {
+                    case XP_BOTTLE:
+                        em.changeExp(100);
+                        TextUtils.sendFormatted(player, "&(aqua)Received 100 EXP.");
+                        break;
+                    case XP_BUCKET:
+                        em.changeExp(1000);
+                        TextUtils.sendFormatted(player, "&(aqua)Received 1000 EXP.");
+                        break;
+                    default:
+                        return;
+                }
+                event.setCancelled(true);
+                ItemUtils.changeAmount(hand, -1);
+                return;
+            }
+        }
+
+        switch(block.getType()) {
+            case ENCHANTING_TABLE: {
+                if (hand.getType() != Material.BUCKET && hand.getType() != Material.GLASS_BOTTLE) return;
+
+                event.setCancelled(true);
+
+                if(CustomItemHandler.isCustomItem(hand)) {
+                    TextUtils.sendFormatted(player, "&(red)Use a normal bucket or glass bottle to store your exp.");
+                    return;
+                }
+                switch (hand.getType()) {
+                    case GLASS_BOTTLE: {
+                        if(em.getCurrentExp() >= 100) {
+                            ItemStack stack = CustomItem.XP_BOTTLE.getItem();
+                            ItemUtils.setItemStackLore(stack, ChatColor.GRAY + "100 Experience", "&9MonstersPlus");
+                            world.dropItemNaturally(block.getLocation(), stack);
+                            em.changeExp(-100);
+                        } else {
+                            TextUtils.sendFormatted(
+                                player,
+                                "&(red)You must have 100 EXP to create 1 %0",
+                                CustomItem.XP_BOTTLE.getName()
+                            );
+                        }
+                    }
+                    break;
+                    case BUCKET: {
+                        if (em.getCurrentExp() >= 1000) {
+                            ItemStack stack = CustomItem.XP_BUCKET.getItem();
+                            ItemUtils.setItemStackLore(stack, ChatColor.GRAY + "1000 experience", "&9MonstersPlus");
+                            world.dropItemNaturally(block.getLocation(), stack);
+                            em.changeExp(-1000);
+                        } else {
+                            TextUtils.sendFormatted(player, "&(red)You must have 1000 EXP to create 1 %0", CustomItem.XP_BUCKET.getName());
+                            return;
+                        }
+                    }
+                    break;
+                }
+                ItemUtils.changeAmount(hand, -1);
+                return;
+            }
+        }
+
+    }
+
+    @EventHandler()
+    public void onMobSpawn(CreatureSpawnEvent event) {
+        if(event.isCancelled()) return;
+
+        LivingEntity livEnt = event.getEntity();
+
+        if(livEnt instanceof EnderDragon && !event.getLocation().getWorld().getName().toLowerCase().contains("end")) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler()
+    public void onEntityDamageEntity(EntityDamageByEntityEvent event) {
+        if(event.isCancelled()) return;
+
+        if(event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+            Player target = (Player) event.getEntity();
+            Player damager = (Player) event.getDamager();
+
+            if (DisguiseAPI.isDisguised(target)) {
+                TextUtils.sendFormatted(
+                    target,
+                    "&(red)Your disguise has been blown due to PvP."
+                );
+                DisguiseAPI.undisguiseToAll(target);
+            }
+            if (DisguiseAPI.isDisguised(damager)) {
+                TextUtils.sendFormatted(
+                    damager,
+                    "&(red)Your disguise has been blown due to PvP."
+                );
+                DisguiseAPI.undisguiseToAll(damager);
+            }
+        }
     }
 
 }

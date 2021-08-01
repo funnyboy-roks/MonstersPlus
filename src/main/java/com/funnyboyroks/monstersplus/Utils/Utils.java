@@ -1,5 +1,16 @@
 package com.funnyboyroks.monstersplus.Utils;
 
+import com.funnyboyroks.monstersplus.MonstersPlus;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.BukkitUtil;
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.association.RegionAssociable;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -108,5 +119,16 @@ public class Utils {
 
     public static <T> T choseRandom(T[] array) {
         return array[randomInt(array.length)];
+    }
+
+    public static <T> T choseRandom(List<T> list) {
+        return list.get(randomInt(list.size()));
+    }
+
+    public static boolean isFlagAllowed(Location loc, StateFlag flag, Player player) {
+        LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+        RegionManager rm = MonstersPlus.worldGuard.getRegionManager(loc.getWorld());
+        RegionContainer container = WorldGuardPlugin.inst().getRegionContainer();
+        return container.createQuery().testState(loc, localPlayer, flag);
     }
 }

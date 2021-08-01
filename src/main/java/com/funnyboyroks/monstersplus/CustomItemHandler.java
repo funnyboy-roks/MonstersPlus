@@ -2,19 +2,21 @@ package com.funnyboyroks.monstersplus;
 
 import com.funnyboyroks.monstersplus.Data.structs.CustomItem;
 import com.funnyboyroks.monstersplus.Tasks.CombinedTasks;
-import com.funnyboyroks.monstersplus.Utils.EntityUtils;
-import com.funnyboyroks.monstersplus.Utils.MonsterUpdater;
-import com.funnyboyroks.monstersplus.Utils.Pair;
-import com.funnyboyroks.monstersplus.Utils.Utils;
+import com.funnyboyroks.monstersplus.Utils.*;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,17 +25,15 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CustomItemHandler {
 
-    public static final Map<UUID, Integer> arrowCycleInstances = new HashMap<>();
-    public static final Map<UUID, Pair<CustomItem, UUID>> projInstances = new HashMap<>();
+    public static final Map<UUID, Integer> ARROW_CYCLE_INSTANCES = new HashMap<>();
+    public static final Map<UUID, Pair<CustomItem, UUID>> PROJ_INSTANCES = new HashMap<>();
+    public static final List<UUID> ANVILS = new ArrayList<>();
 
-    public CustomItemHandler() {
-
-    }
-
-    public CustomItem getCustomItem(ItemStack stack) {
+    public static CustomItem getCustomItem(ItemStack stack) {
         if(!stack.hasItemMeta()) return null;
 
         ItemMeta meta = stack.getItemMeta();
@@ -45,11 +45,11 @@ public class CustomItemHandler {
             .orElse(null);
     }
 
-    public boolean isCustomItem(ItemStack stack) {
+    public static boolean isCustomItem(ItemStack stack) {
         return getCustomItem(stack) != null;
     }
 
-    public void playerArrowShoot(EntityShootBowEvent event, Player player) {
+    public static void playerArrowShoot(EntityShootBowEvent event, Player player) {
         Entity projEnt = event.getProjectile();
         ItemStack arrow = event.getConsumable();
 
@@ -78,17 +78,17 @@ public class CustomItemHandler {
                     break;
             }
         }
-        projInstances.put(proj.getUniqueId(), new Pair<>(type, player.getUniqueId()));
+        PROJ_INSTANCES.put(proj.getUniqueId(), new Pair<>(type, player.getUniqueId()));
     }
 
-    public void arrowHit(ProjectileHitEvent event) {
+    public static void arrowHit(ProjectileHitEvent event) {
         Projectile arrow = event.getEntity();
         Entity target = event.getHitEntity();
 
-        if (!projInstances.containsKey(arrow.getUniqueId())) return;
+        if (!PROJ_INSTANCES.containsKey(arrow.getUniqueId())) return;
 
-        CustomItem type = projInstances.get(arrow.getUniqueId()).getFirst();
-        Player shooter = Bukkit.getPlayer(projInstances.get(arrow.getUniqueId()).getSecond());
+        CustomItem type = PROJ_INSTANCES.get(arrow.getUniqueId()).getFirst();
+        Player shooter = Bukkit.getPlayer(PROJ_INSTANCES.get(arrow.getUniqueId()).getSecond());
         Location loc = arrow.getLocation();
 
         if (shooter == null || !Utils.isPvpLocation(loc)) return;
@@ -219,7 +219,7 @@ public class CustomItemHandler {
                             Location tempLoc = loc.add(0, 8, 0);
                             LargeFireball fball = loc.getWorld().spawn(tempLoc, LargeFireball.class);
                             fball.setVelocity(new Vector(0, -4, 0));
-                            projInstances.put(fball.getUniqueId(), new Pair<>(CustomItem.FIREBALL_ARROW, shooter.getUniqueId()));
+                            PROJ_INSTANCES.put(fball.getUniqueId(), new Pair<>(CustomItem.FIREBALL_ARROW, shooter.getUniqueId()));
                         },
                         10 * (i + 1)
                     );
@@ -294,6 +294,146 @@ public class CustomItemHandler {
 
     }
 
+    public static void eggHit(ProjectileHitEvent event) {
+        Entity egg = event.getEntity();
+        if (!PROJ_INSTANCES.containsKey(egg.getUniqueId())) return;
+
+        Location loc = egg.getLocation();
+        Pair<CustomItem, UUID> p = PROJ_INSTANCES.get(egg.getUniqueId());
+        Player player = Bukkit.getPlayer(p.getSecond());
+        CustomItem item = p.getFirst();
+        PROJ_INSTANCES.remove(egg.getUniqueId());
+        if ((!Utils.isPvpLocation(loc) || !Utils.isFlagAllowed(loc, DefaultFlag.USE, player)) && !player.isOp()) return;
+
+        List<LivingEntity> nearby6 = loc.getNearbyEntities(6, 6, 6)
+            .stream()
+            .filter(e -> e instanceof LivingEntity)
+            .map(e -> (LivingEntity) e)
+            .collect(Collectors.toList());
+        switch(item) {
+            case SURVIVALIST_BOMB: {
+                    nearby6.forEach(livEnt -> {
+                    EntityUtils.potionEffectChance(livEnt, PotionEffectType.BLINDNESS, 80, 4 * 20, 1);
+                    EntityUtils.potionEffectChance(livEnt, PotionEffectType.NIGHT_VISION, 80, 4 * 20, 1);
+                    EntityUtils.potionEffectChance(livEnt, PotionEffectType.SLOW, 80, 4 * 20, 1);
+                    }
+                );
+            }
+            break;
+            case WARRIOR_BOMB: {
+                nearby6.forEach(livEnt -> {
+                    EntityUtils.burn(livEnt, 8 * 20, 1);
+                });
+                LivingEntity livEnt = (LivingEntity) loc.getWorld().spawnEntity(loc, EntityType.ZOMBIFIED_PIGLIN);
+                EntityUtils.setEquipment(
+                    livEnt,
+                    EquipmentSlot.HAND,
+                    Material.DIAMOND_SWORD
+                );
+                EntityUtils.setDropChances(livEnt, 0f);
+                EntityUtils.ArmorType.GOLD.apply(livEnt);
+
+                Bukkit.getScheduler().runTaskLater(MonstersPlus.instance, livEnt::remove, 10 * 20);
+
+                if (nearby6.size() > 0) {
+                    ((Monster) livEnt).setTarget(Utils.choseRandom(nearby6));
+                }
+            }
+            break;
+            case WITCH_DOCTOR_BOMB: {
+                nearby6.forEach(livEnt -> {
+                    EntityUtils.potionEffectChance(livEnt, PotionEffectType.WITHER, 1, 4 * 20, 1);
+                });
+
+                for (int i = 0; i < 3; i++) {
+                    LivingEntity livEnt = (LivingEntity) loc.getWorld().spawnEntity(loc, EntityType.WITHER_SKELETON);
+                    EntityUtils.setEquipment(livEnt, EquipmentSlot.HAND, Material.BOW);
+                    EntityUtils.setDropChance(livEnt, EquipmentSlot.HAND, 0f);
+                    EntityUtils.setMaxHealth(livEnt,100);
+                    EntityUtils.heal(livEnt);
+                    Bukkit.getScheduler().runTaskLater(MonstersPlus.instance, livEnt::remove, 10 * 20);
+                    if (nearby6.size() > 0) {
+                        ((Monster) livEnt).setTarget(Utils.choseRandom(nearby6));
+                    }
+                }
+            }
+            break;
+            case MINER_BOMB: {
+                float SIZE = 2F;
+                int DELAY = 3;
+                for (int i = 0; i < 26; i += 2) {
+                    Location loc2 = loc.clone().add(i, 0, 0);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(-i, 0, 0);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(0, 0, i);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(0, 0, -i);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(i, 0, i);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(i, 0, -i);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(-i, 0, i);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+
+                    loc2 = loc.clone().add(-i, 0, -i);
+                    delayedExplosion(loc2, SIZE, DELAY * i);
+                }
+            }
+            break;
+            case FISHERMAN_BOMB: {
+                nearby6.forEach(livEnt -> Utils.lightning(livEnt.getLocation()));
+                for (int i = -5; i <= 5; i++) {
+                    for (int j = -5; j <= 5; j++) {
+                        if (Utils.randomBool(.1)) {
+                            int finalJ = j;
+                            int finalI = i;
+                            Bukkit.getScheduler().runTaskLater(
+                                MonstersPlus.instance,
+                                () -> {
+                                    Utils.lightning(loc.clone().add(finalI, 0, finalJ));
+                                },
+                                Utils.randomInt(150)
+                            );
+                        }
+                    }
+                }
+            }
+            break;
+            case BLACKSMITH_BOMB: {
+                World world = loc.getWorld();
+                for (int i = -5; i <= 5; i++) {
+                    for (int j = -5; j <= 5; j++) {
+                        if (Utils.randomBool(.65)) {
+                            FallingBlock ent = world.spawnFallingBlock(loc.clone().add(i, 20, j), Material.ANVIL.createBlockData());
+                            ent.setFallDistance(50F);
+                            ent.setDropItem(false);
+                            ANVILS.add(ent.getUniqueId());
+                        }
+                    }
+                }
+            }
+            break;
+        }
+    }
+
+    private static void delayedExplosion(Location loc, float power, int delay) {
+        Bukkit.getScheduler().runTaskLater(
+            MonstersPlus.instance,
+            () -> {
+                loc.createExplosion(power);
+            },
+            delay
+        );
+    }
+
     /**
      * <b>THIS METHOD IS NOT COMPLETE.</b><br>
      * I have honestly no idea what it's supposed to do, but it's not used. <br>
@@ -304,13 +444,13 @@ public class CustomItemHandler {
      * @return idk
      */
     private ItemStack arrowCycleCheck(Player player, ItemStack stack) {
-        if (!arrowCycleInstances.containsKey(player.getUniqueId())) {
+        if (!ARROW_CYCLE_INSTANCES.containsKey(player.getUniqueId())) {
             return stack;
         }
         player.updateInventory();
         PlayerInventory inv = player.getInventory();
 
-        int savedSlot = arrowCycleInstances.get(player.getUniqueId());
+        int savedSlot = ARROW_CYCLE_INSTANCES.get(player.getUniqueId());
         int firstArrowSlot = inv.first(Material.ARROW);
 
         if (savedSlot == firstArrowSlot) {
@@ -323,5 +463,31 @@ public class CustomItemHandler {
         }
 
         return stack;
+    }
+
+
+    @EventHandler()
+    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        Projectile proj = event.getEntity();
+        if(!(proj.getShooter() instanceof Player)) return;
+
+        Player player = (Player) proj.getShooter();
+        ItemStack stack = player.getInventory().getItemInMainHand();
+
+        CustomItem item = CustomItemHandler.getCustomItem(stack);
+        if(item == null) return;
+
+        if(Cooldown.onCooldown(player.getUniqueId(), "bombs")) {
+            TextUtils.sendFormatted(
+                player,
+                "&(red)You must wait {&(gold)%0} before using another bomb.",
+                Cooldown.getTimeFormatted(player.getUniqueId(), "bombs")
+            );
+            event.setCancelled(true);
+            ItemUtils.changeAmount(stack, +1);
+            return;
+        }
+        Cooldown.start(player.getUniqueId(), "bombs", TimeInterval.SECOND, 10);
+        PROJ_INSTANCES.put(proj.getUniqueId(), new Pair<>(item, player.getUniqueId()));
     }
 }

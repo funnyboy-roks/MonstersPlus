@@ -63,11 +63,11 @@ public class ItemUtils {
         return stack;
     }
 
-    public static ItemStack setItemStackLore(ItemStack stack, String... name) {
+    public static ItemStack setItemStackLore(ItemStack stack, String... lore) {
         return setItemStackLore(
             stack,
             Arrays
-                .stream(name)
+                .stream(lore)
                 .map(s -> ChatColor.translateAlternateColorCodes('&', "&r" + s))
                 .map(Component::text)
                 .collect(Collectors.toList())
@@ -150,6 +150,10 @@ public class ItemUtils {
 
     public static boolean matchesPowerstone(ItemStack stack) {
         return getLore(stack).contains("Powerstone");
+    }
+
+    public static void changeAmount(ItemStack stack, int delta) {
+        stack.setAmount(stack.getAmount() + delta);
     }
 
 }

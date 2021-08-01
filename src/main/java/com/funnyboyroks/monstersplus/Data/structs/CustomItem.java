@@ -2,10 +2,13 @@ package com.funnyboyroks.monstersplus.Data.structs;
 
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import com.funnyboyroks.monstersplus.Utils.ItemUtils;
+import com.funnyboyroks.monstersplus.Utils.PlayerUtils;
 import com.funnyboyroks.monstersplus.Utils.RecipeUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +16,7 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -90,8 +94,13 @@ public enum CustomItem {
     MINER_BOMB        ("Miner Bomb",        "kVk|kBk|kkk", Material.EGG, 1, JobType.MINER,        10, "A cluster bomb that explodes repeatedly."), // , "1. Gunpowder  2. Iron Pickaxe  3-4. Gunpowder 5. Egg  6-9. Gunpowder"),
     FISHERMAN_BOMB    ("Fisherman Bomb",    "kWk|kBk|kkk", Material.EGG, 1, JobType.FISHERMAN,    10, "A lightning bomb that electricutes nearby enemies."), // , "1. Gunpowder  2. Fishing Rod  3-4. Gunpowder 5. Egg  6-9. Gunpowder"),
     BLACKSMITH_BOMB   ("Blacksmith Bomb",   "kXk|kBk|kkk", Material.EGG, 1, JobType.BLACKSMITH,   10, "A bomb that summons anvils from the sky to crush foes."), // , "1. Gunpowder  2. Furnace   3-4. Gunpowder 5. Egg  6-9. Gunpowder"),
+
+    POWERSTONE ("&5Powerstone", Material.REDSTONE, true),
+    XP_BOTTLE ("Bottle o' EXP", Material.GLASS_BOTTLE, true),
+    XP_BUCKET ("Bucket o' EXP", Material.BUCKET, true),
     ;
 
+    private final String name;
     private final String recipeStr;
     private final ItemStack item;
     private final JobType job;
@@ -101,6 +110,7 @@ public enum CustomItem {
 //    private String recipeDesc;
 
     CustomItem(ItemStack item, String recipeStr, JobType job, int level, String description, int powerstones/*, String recipeDesc*/) {
+        this.name = ItemUtils.getName(item);
         this.recipeStr = recipeStr;
         this.item = item;
         this.job = job;
@@ -130,7 +140,23 @@ public enum CustomItem {
         this(name, recipeStr, mat, count, job, level, null);
     }
 
+    CustomItem(String name, Material mat, boolean glint) {
+        ItemStack stack = ItemUtils.item(mat, name);
+        if(glint) {
+            ItemUtils.forceEnchant(stack, Enchantment.MENDING, 1);
+            ItemUtils.addAllFlags(stack);
+        }
+        this.name = ChatColor.translateAlternateColorCodes('&', name);
+        this.item = stack;
+        this.recipeStr = null;
+        this.job = null;
+        this.level = -1;
+        this.description = null;
+        this.powerstones = -1;
+    }
+
     public boolean registerRecipe() {
+        if(recipeStr == null) return true;
 
         try {
             NamespacedKey key = new NamespacedKey(MonstersPlus.instance, name().toLowerCase());
@@ -153,12 +179,11 @@ public enum CustomItem {
 
 
     public static void registerRecipes() {
-        int success = 0;
         List<CustomItem> fails = new ArrayList<>();
-        for (CustomItem ci : values()) {
-            if (ci.registerRecipe()) ++success;
-            else fails.add(ci);
-        }
+        Arrays.stream(values()).filter(ci -> ci.recipeStr != null).forEach(ci -> {
+            if (!ci.registerRecipe()) fails.add(ci);
+        });
+        long success = Arrays.stream(values()).filter(ci -> ci.recipeStr != null).count() - fails.size();
         Bukkit.getLogger().log(
             Level.INFO,
             "Successfully loaded " + success + " recipes, " +
@@ -192,8 +217,7 @@ public enum CustomItem {
     }
 
     public boolean canUse(Player player) {
-        OfflineMPPlayer pd = MonstersPlus.getPluginData().getPlayerData(player.getUniqueId());
-        return pd.job == job && pd.jobLevel >= level;
+        return PlayerUtils.getJobLvl(player, job) >= level;
     }
 
     /**
@@ -230,7 +254,11 @@ public enum CustomItem {
 
 
     public ItemStack getItem() {
-        return item;
+        return item.clone();
+    }
+
+    public String getName() {
+        return name;
     }
 }
 
