@@ -1,5 +1,6 @@
 package com.funnyboyroks.monstersplus.Utils;
 
+import com.funnyboyroks.monstersplus.Jobs.Enchanter.EnchantList;
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.LocalPlayer;
@@ -12,6 +13,8 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -102,6 +105,19 @@ public class Utils {
             .collect(Collectors.toList());
     }
 
+    public static List<String> enumValues(Enum[] en) {
+        return Arrays.stream(en)
+            .map(Enum::name)
+            .map(String::toLowerCase)
+            .map(s -> s.replaceAll("_", "-"))
+            .collect(Collectors.toList());
+    }
+
+    public static String toEnumName(String arg) {
+        String name = arg.toUpperCase().replace("-", "_");
+        return name;
+    }
+
     public static int randomInt(int range, int offset) {
         return (int) (Math.random() * range) + offset;
     }
@@ -131,4 +147,22 @@ public class Utils {
         RegionContainer container = WorldGuardPlugin.inst().getRegionContainer();
         return container.createQuery().testState(loc, localPlayer, flag);
     }
+
+    public static List<Block> relativeBlocks(Block block) {
+        return Arrays.stream(BlockFace.values()).map(block::getRelative).collect(Collectors.toList());
+    }
+
+    /**
+     * Attempts to parse int, if it can't, then 0 is returned
+     * @param v the string to parse
+     * @return the parsed int or 0
+     */
+    public static int safeParseInt(String v) {
+        int out = 0;
+        try {
+            out = Integer.parseInt(v);
+        } catch (NumberFormatException ignored){}
+        return out;
+    }
+
 }

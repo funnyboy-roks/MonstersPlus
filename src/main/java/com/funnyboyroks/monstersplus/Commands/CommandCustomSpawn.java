@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MonsterSpawnCommand implements TabCompleter, CommandExecutor {
+public class CommandCustomSpawn implements TabCompleter, CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

@@ -1,7 +1,8 @@
 package com.funnyboyroks.monstersplus;
 
+import com.funnyboyroks.monstersplus.Commands.CommandJobEnchant;
 import com.funnyboyroks.monstersplus.Commands.Monster;
-import com.funnyboyroks.monstersplus.Commands.MonsterSpawnCommand;
+import com.funnyboyroks.monstersplus.Commands.CommandCustomSpawn;
 import com.funnyboyroks.monstersplus.Data.structs.CustomItem;
 import com.funnyboyroks.monstersplus.Listeners.MonsterListeners;
 import com.funnyboyroks.monstersplus.Listeners.PlayerListeners;
@@ -49,7 +50,8 @@ public final class MonstersPlus extends JavaPlugin {
 
         Server sv = Bukkit.getServer();
         sv.getPluginCommand("monster").setExecutor(new Monster());
-        sv.getPluginCommand("customspawn").setExecutor(new MonsterSpawnCommand());
+        sv.getPluginCommand("jobenchant").setExecutor(new CommandJobEnchant());
+        sv.getPluginCommand("customspawn").setExecutor(new CommandCustomSpawn());
 
     }
 

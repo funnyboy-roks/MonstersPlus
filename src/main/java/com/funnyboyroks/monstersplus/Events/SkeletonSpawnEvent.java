@@ -4,6 +4,7 @@ import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
 import com.funnyboyroks.monstersplus.Utils.EntityUtils;
 import com.funnyboyroks.monstersplus.Utils.ItemUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
@@ -391,7 +392,9 @@ public class SkeletonSpawnEvent {
             }
             break;
             case TICKLES: {
-                // TODO: Use Wither Skeleton: ((Skeleton) lent).setSkeletonType(SkeletonType.WITHER);
+                Location loc = livEnt.getLocation();
+                livEnt.remove();
+                livEnt = (LivingEntity) loc.getWorld().spawnEntity(loc, EntityType.WITHER_SKELETON);
                 EntityUtils.addLongPotion(livEnt, PotionEffectType.SPEED, 2);
 
                 ItemStack bow = new ItemStack(Material.FEATHER);

@@ -32,7 +32,7 @@ public class MonsterListeners implements Listener {
             LivingEntity livEntDmg = (LivingEntity) damager;
             LivingEntity livEntTgt = (LivingEntity) target;
 
-            MonsterUpdater.update(livEntDmg, livEntTgt, isProjectile); //TODO: FINISH THIS
+            MonsterUpdater.update(livEntDmg, livEntTgt, isProjectile);
             MonsterType.updateMonsterMetaName(livEntDmg);
             MonsterType.updateMonsterMetaName(livEntTgt);
 

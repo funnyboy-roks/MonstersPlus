@@ -15,10 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ItemUtils {
@@ -156,4 +153,10 @@ public class ItemUtils {
         stack.setAmount(stack.getAmount() + delta);
     }
 
+    public static boolean enchantConflicts(Enchantment enchant, ItemStack stack) {
+        for(Enchantment e : stack.getEnchantments().keySet()) {
+            if(e.conflictsWith(enchant)) return false;
+        }
+        return true;
+    }
 }

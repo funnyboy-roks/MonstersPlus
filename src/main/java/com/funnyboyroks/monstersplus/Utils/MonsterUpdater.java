@@ -2,15 +2,13 @@ package com.funnyboyroks.monstersplus.Utils;
 
 import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
 import com.funnyboyroks.monstersplus.MonstersPlus;
-import com.funnyboyroks.monstersplus.Tasks.CombinedTasks;
-import com.funnyboyroks.monstersplus.Tasks.RespawnEntityTask;
-import com.funnyboyroks.monstersplus.Tasks.TntThrowTask;
-import com.funnyboyroks.monstersplus.Tasks.VortexCreepTask;
+import com.funnyboyroks.monstersplus.Tasks.*;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.*;
 import org.bukkit.inventory.EquipmentSlot;
@@ -90,7 +88,7 @@ public class MonsterUpdater {
                         0.36,
                         ChatColor.RED + "Vortex Creep begins to power up!");
                     // Reset the creeper
-                    EntityUtils.setTriggeredDelayed((10 * 20 + 0 + 30), livEnt, false);
+                    EntityUtils.setTriggeredDelayed((10 * 20 + 30), livEnt, false);
                 }
                 break;
             case ATILLA:
@@ -123,8 +121,8 @@ public class MonsterUpdater {
             EntityUtils.updateCustomName(target);
         }
 
-        // TODO: updateMonsterTracking(damager);
-        // TODO: updateMonsterTracking(target);
+        updateMonsterTracking(damager);
+        updateMonsterTracking(target);
 
         MonsterType damagerType = MonsterType.getMonsterType(damager);
         MonsterType targetType = MonsterType.getMonsterType(target);
@@ -307,7 +305,7 @@ public class MonsterUpdater {
                     EntityUtils.damage(damager, target, 2);
                     break;
                 case SLEEPY_HOLLOW:
-                    // TODO: liftEntityUpward(damager, 1, 33);
+                    EntityUtils.liftUpward(damager, 1, .33);
                     break;
                 case LEGOLAS:
                     EntityUtils.damage(target, damager, 1);
@@ -320,6 +318,7 @@ public class MonsterUpdater {
                 case TICKLES:
                 case SUICUNE:
                 case BARKIRA:
+                case POCUS:
                     EntityUtils.teleport(damager, target, 0.25);
                     break;
                 case CAPTAIN_AHAB:
@@ -333,8 +332,8 @@ public class MonsterUpdater {
                             );
 
                             EntityUtils.setTriggered(target, true);
-                            // TODO: new VortexCreepTask(target, 15, 10, 7, 2, 2, 0.55);
-                            // TODO: TaskTools.setTriggeredDelayed((7 * 2 + 2 + 0), target, false);
+                            new VortexCreepTask(target, 15, 10, 7, 2, 2, 0.55);
+                            EntityUtils.setTriggeredDelayed(16, target, false);
 
                             for (Player player : target.getLocation().getNearbyPlayers(15)) {
                                 EntityUtils.potionEffectChance(player, PotionEffectType.POISON, 2, 4 * 20, 1);
@@ -342,9 +341,6 @@ public class MonsterUpdater {
                             }
                         }
                     }
-                    break;
-                case POCUS:
-                    EntityUtils.teleport(damager, target, 0.25);
                     break;
                 case HOCUS:
                     EntityUtils.teleport(target, damager, 0.25);
@@ -598,7 +594,32 @@ public class MonsterUpdater {
     }
 
     public static void createIceRing(LivingEntity target, int second, boolean useSlow) {
-        // TODO: write this (https://github.com/nathank33/MonstersPlus/blob/5d91cc42615335ca3ec4192cd26478ad45472d9b/src/me/coolade/monstersplus/monsters/MonsterUpdater.java#L448)
+        Location loc = target.getLocation();
+        Block centreBlock = loc.getBlock();
+        List<Block> blocks = Utils.relativeBlocks(centreBlock);
+        blocks.forEach(b -> {
+            if (
+                Utils.isSpawnableLocation(b.getLocation()) &&
+                    b.isEmpty()
+            ) {
+                CombinedTasks.PlaceAndClean(Material.ICE, b.getLocation(), 0, second * 20);
+                new CleanBlockTask(Material.WATER, Material.AIR, b.getLocation(), second * 20 * 2);
+            }
+        });
+
+        if (useSlow) {
+            EntityUtils.potionEffectChance(target, PotionEffectType.SLOW, 5, 2 * 20, 1);
+        }
+    }
+
+    public static void updateMonsterTracking(LivingEntity lent) {
+        if (!(lent instanceof Monster)) {
+            return;
+        }
+        Monster mob = (Monster) lent;
+        if (Utils.randomBool(TRACK_STOP_CHANCE)) {
+            mob.setTarget(lent);
+        }
     }
 
 }
