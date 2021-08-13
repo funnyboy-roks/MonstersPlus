@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -20,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -369,6 +372,31 @@ public class EntityUtils {
         return count > powerstoneCount(player);
     }
 
+    public static ItemFrame itemFrame(Block block, BlockFace face, Material item) {
+        ItemFrame frame = (ItemFrame) block.getWorld().spawnEntity(block.getRelative(face).getLocation(), EntityType.ITEM_FRAME);
+        frame.setRotation((float) (Math.PI * (0.5 * face.ordinal() + 1)), 0);
+        frame.setItem(new ItemStack(item), false);
+        frame.setItemDropChance(0f);
+        frame.setVisible(false);
+        frame.setFixed(true);
+        return frame;
+    }
+
+    public static ItemFrame getItemFrame(Block block, BlockFace face) {
+        List<ItemFrame> ents = block
+            .getRelative(face)
+            .getLocation()
+            .getNearbyEntitiesByType(ItemFrame.class, 1)
+            .stream()
+            .toList();
+        for (ItemFrame frame : ents) {
+            if(frame.getFacing() == face) {
+                return frame;
+            }
+        }
+        return null;
+
+    }
 
     public enum ArmorType {
         LEATHER(Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS),

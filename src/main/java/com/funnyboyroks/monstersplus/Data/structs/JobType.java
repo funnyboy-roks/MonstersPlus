@@ -6,7 +6,7 @@ public enum JobType {
     WARRIOR("Warrior", "Warrior"),
     BUILDER("Builder", "Builder"),
     FARMER("Farmer", "Farmer"),
-    WITCH_DOCTOR("Witch Doctor", "Witch Doctor"),
+    WITCH_DOCTOR("Witch Doctor", "WitchDoctor"),
     MINER("Miner", "Miner"),
     FISHERMAN("Fisherman", "Fisherman"),
     BLACKSMITH("Blacksmith", "Blacksmith"),

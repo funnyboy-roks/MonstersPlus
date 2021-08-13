@@ -138,7 +138,7 @@ public class Utils {
     }
 
     public static <T> T choseRandom(List<T> list) {
-        return list.get(randomInt(list.size()));
+        return list.get(list.size() == 1 ? 0 : randomInt(list.size()));
     }
 
     public static boolean isFlagAllowed(Location loc, StateFlag flag, Player player) {
@@ -165,4 +165,12 @@ public class Utils {
         return out;
     }
 
+    public static boolean hasEmptyFaces(Block block) {
+        return Arrays.stream(BlockFace.values())
+            .filter(BlockFace::isCartesian)
+            .filter(f -> f.getModY() == 0)
+            .map(block::getRelative)
+            .map(Block::isEmpty)
+            .reduce(false, (a, b) -> a && b);
+    }
 }

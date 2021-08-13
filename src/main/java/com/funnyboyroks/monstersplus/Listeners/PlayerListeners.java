@@ -5,6 +5,7 @@ import com.funnyboyroks.monstersplus.Data.structs.CustomItem;
 import com.funnyboyroks.monstersplus.Data.structs.FishingItems;
 import com.funnyboyroks.monstersplus.Data.structs.JobType;
 import com.funnyboyroks.monstersplus.Data.structs.MonsterType;
+import com.funnyboyroks.monstersplus.Jobs.WitchDoctor.BrewHandler;
 import com.funnyboyroks.monstersplus.MonstersPlus;
 import com.funnyboyroks.monstersplus.Tasks.PlaceBlockTask;
 import com.funnyboyroks.monstersplus.Utils.*;
@@ -252,163 +253,172 @@ public class PlayerListeners implements Listener {
         World world = block.getWorld();
         ExperienceManager em = new ExperienceManager(player);
 
-        switch(hand.getType()) {
-            case FLINT_AND_STEEL: {
-                if (!world.getName().toLowerCase().contains("end")) return;
+        switch(event.getAction()) {
+            case RIGHT_CLICK_BLOCK: {
 
-                if (block.getType() != Material.OBSIDIAN) return;
-                if (!PlayerUtils.hasJob(player, JobType.BUILDER) || PlayerUtils.getJobLvl(player, JobType.BUILDER) < 7) {
-                    TextUtils.sendFormatted(
-                        player,
-                        "&(red)You must be at least a level {&(gold)%0 builder} to spawn an EnderDragon",
-                        7
-                    );
-                    return;
-                }
+                switch(hand.getType()) {
+                    case FLINT_AND_STEEL: {
+                        if (!world.getName().toLowerCase().contains("end")) return;
 
-                int xd = 0;
-                int zd = 0;
-                if (block.getRelative(1, 0, 0).getType() == Material.OBSIDIAN) {
-                    xd = 1;
-                } else if (block.getRelative(-1, 0, 0).getType() == Material.OBSIDIAN) {
-                    xd = -1;
-                } else if (block.getRelative(0, 0, 1).getType() == Material.OBSIDIAN) {
-                    zd = 1;
-                } else if (block.getRelative(0, 0, -1).getType() == Material.OBSIDIAN) {
-                    zd = -1;
-                } else {
-                    return;
-                }
-
-                int count = 0;
-                for (int i = 0; i < 5; ++i) {
-                    for (int j = 0; j < 3; ++j) {
-                        if (block.getRelative(xd * j, i, zd * j).getType() == Material.OBSIDIAN) {
-                            ++count;
-                        }
-                    }
-                }
-                if (count != 11) return;
-
-                if (Cooldown.onCooldown(player.getUniqueId(), "enderspawning") && !player.isOp()) {
-                    TextUtils.sendFormatted(
-                        player,
-                        "&(gold)You can use this in {&(red)%0}.",
-                        Cooldown.getTimeFormatted(player.getUniqueId(), "enderspawning")
-                    );
-                    return;
-                }
-
-                Cooldown.start(player.getUniqueId(), "enderspawning", TimeInterval.HOUR);
-
-                Block[] airToFire = new Block[]{
-                    block.getRelative(xd, 1, zd),
-                    block.getRelative(xd * 2, 1, zd * 2),
-                    block.getRelative(xd, 3, zd),
-                    block.getRelative(xd * 2, 3, zd * 2),
-                    };
-
-                for (Block b : airToFire) {
-                    if (b.isEmpty()) {
-                        b.setType(Material.FIRE);
-                    }
-                }
-
-                for (int i = 1; i < 4; ++i) {
-                    Bukkit.getScheduler().runTaskLater(
-                        MonstersPlus.instance,
-                        () -> airToFire[2].getLocation().createExplosion(2F),
-                        20 * i
-                    );
-                }
-
-                for (int i = 0; i < 5; i++) {
-                    for (int j = 0; j < 3; j++) {
-                        Block b = block.getRelative(xd * j, i, zd * j);
-                        new PlaceBlockTask(Material.AIR, b.getLocation(), 80);
-                    }
-                }
-
-                Bukkit.getScheduler().runTaskLater(
-                    MonstersPlus.instance,
-                    () ->
-                        world
-                            .spawnEntity(
-                                block
-                                    .getRelative(0, 10, 0)
-                                    .getLocation(),
-                                EntityType.ENDER_DRAGON
-                            ),
-                    80
-                );
-                return;
-            }
-            case GLASS_BOTTLE:
-            case BUCKET: {
-                if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
-                    return;
-                }
-                CustomItem item = CustomItemHandler.getCustomItem(hand);
-                if (item == null) return;
-                switch (item) {
-                    case XP_BOTTLE:
-                        em.changeExp(100);
-                        TextUtils.sendFormatted(player, "&(aqua)Received 100 EXP.");
-                        break;
-                    case XP_BUCKET:
-                        em.changeExp(1000);
-                        TextUtils.sendFormatted(player, "&(aqua)Received 1000 EXP.");
-                        break;
-                    default:
-                        return;
-                }
-                event.setCancelled(true);
-                ItemUtils.changeAmount(hand, -1);
-                return;
-            }
-        }
-
-        switch(block.getType()) {
-            case ENCHANTING_TABLE: {
-                if (hand.getType() != Material.BUCKET && hand.getType() != Material.GLASS_BOTTLE) return;
-
-                event.setCancelled(true);
-
-                if(CustomItemHandler.isCustomItem(hand)) {
-                    TextUtils.sendFormatted(player, "&(red)Use a normal bucket or glass bottle to store your exp.");
-                    return;
-                }
-                switch (hand.getType()) {
-                    case GLASS_BOTTLE: {
-                        if(em.getCurrentExp() >= 100) {
-                            ItemStack stack = CustomItem.XP_BOTTLE.getItem();
-                            ItemUtils.setItemStackLore(stack, ChatColor.GRAY + "100 Experience", "&9MonstersPlus");
-                            world.dropItemNaturally(block.getLocation(), stack);
-                            em.changeExp(-100);
-                        } else {
+                        if (block.getType() != Material.OBSIDIAN) return;
+                        if (!PlayerUtils.hasJob(player, JobType.BUILDER) || PlayerUtils.getJobLvl(player, JobType.BUILDER) < 7) {
                             TextUtils.sendFormatted(
                                 player,
-                                "&(red)You must have 100 EXP to create 1 %0",
-                                CustomItem.XP_BOTTLE.getName()
+                                "&(red)You must be at least a level {&(gold)%0 builder} to spawn an EnderDragon",
+                                7
                             );
-                        }
-                    }
-                    break;
-                    case BUCKET: {
-                        if (em.getCurrentExp() >= 1000) {
-                            ItemStack stack = CustomItem.XP_BUCKET.getItem();
-                            ItemUtils.setItemStackLore(stack, ChatColor.GRAY + "1000 experience", "&9MonstersPlus");
-                            world.dropItemNaturally(block.getLocation(), stack);
-                            em.changeExp(-1000);
-                        } else {
-                            TextUtils.sendFormatted(player, "&(red)You must have 1000 EXP to create 1 %0", CustomItem.XP_BUCKET.getName());
                             return;
                         }
+
+                        int xd = 0;
+                        int zd = 0;
+                        if (block.getRelative(1, 0, 0).getType() == Material.OBSIDIAN) {
+                            xd = 1;
+                        } else if (block.getRelative(-1, 0, 0).getType() == Material.OBSIDIAN) {
+                            xd = -1;
+                        } else if (block.getRelative(0, 0, 1).getType() == Material.OBSIDIAN) {
+                            zd = 1;
+                        } else if (block.getRelative(0, 0, -1).getType() == Material.OBSIDIAN) {
+                            zd = -1;
+                        } else {
+                            return;
+                        }
+
+                        int count = 0;
+                        for (int i = 0; i < 5; ++i) {
+                            for (int j = 0; j < 3; ++j) {
+                                if (block.getRelative(xd * j, i, zd * j).getType() == Material.OBSIDIAN) {
+                                    ++count;
+                                }
+                            }
+                        }
+                        if (count != 11) return;
+
+                        if (Cooldown.onCooldown(player.getUniqueId(), "enderspawning") && !player.isOp()) {
+                            TextUtils.sendFormatted(
+                                player,
+                                "&(gold)You can use this in {&(red)%0}.",
+                                Cooldown.getTimeFormatted(player.getUniqueId(), "enderspawning")
+                            );
+                            return;
+                        }
+
+                        Cooldown.start(player.getUniqueId(), "enderspawning", TimeInterval.HOUR);
+
+                        Block[] airToFire = new Block[]{
+                            block.getRelative(xd, 1, zd),
+                            block.getRelative(xd * 2, 1, zd * 2),
+                            block.getRelative(xd, 3, zd),
+                            block.getRelative(xd * 2, 3, zd * 2),
+                            };
+
+                        for (Block b : airToFire) {
+                            if (b.isEmpty()) {
+                                b.setType(Material.FIRE);
+                            }
+                        }
+
+                        for (int i = 1; i < 4; ++i) {
+                            Bukkit.getScheduler().runTaskLater(
+                                MonstersPlus.instance,
+                                () -> airToFire[2].getLocation().createExplosion(2F),
+                                20 * i
+                            );
+                        }
+
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 3; j++) {
+                                Block b = block.getRelative(xd * j, i, zd * j);
+                                new PlaceBlockTask(Material.AIR, b.getLocation(), 80);
+                            }
+                        }
+
+                        Bukkit.getScheduler().runTaskLater(
+                            MonstersPlus.instance,
+                            () ->
+                                world
+                                    .spawnEntity(
+                                        block
+                                            .getRelative(0, 10, 0)
+                                            .getLocation(),
+                                        EntityType.ENDER_DRAGON
+                                    ),
+                            80
+                        );
+                        return;
                     }
-                    break;
+                    case GLASS_BOTTLE:
+                    case BUCKET: {
+                        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                            return;
+                        }
+                        CustomItem item = CustomItemHandler.getCustomItem(hand);
+                        if (item == null) return;
+                        switch (item) {
+                            case XP_BOTTLE:
+                                em.changeExp(100);
+                                TextUtils.sendFormatted(player, "&(aqua)Received 100 EXP.");
+                                break;
+                            case XP_BUCKET:
+                                em.changeExp(1000);
+                                TextUtils.sendFormatted(player, "&(aqua)Received 1000 EXP.");
+                                break;
+                            default:
+                                return;
+                        }
+                        event.setCancelled(true);
+                        ItemUtils.changeAmount(hand, -1);
+                        return;
+                    }
                 }
-                ItemUtils.changeAmount(hand, -1);
-                return;
+
+                switch(block.getType()) {
+                    case ENCHANTING_TABLE: {
+                        if (hand.getType() != Material.BUCKET && hand.getType() != Material.GLASS_BOTTLE) return;
+
+                        event.setCancelled(true);
+
+                        if(CustomItemHandler.isCustomItem(hand)) {
+                            TextUtils.sendFormatted(player, "&(red)Use a normal bucket or glass bottle to store your exp.");
+                            return;
+                        }
+                        switch (hand.getType()) {
+                            case GLASS_BOTTLE: {
+                                if(em.getCurrentExp() >= 100) {
+                                    ItemStack stack = CustomItem.XP_BOTTLE.getItem();
+                                    ItemUtils.setItemStackLore(stack, ChatColor.GRAY + "100 Experience", "&9MonstersPlus");
+                                    world.dropItemNaturally(block.getLocation(), stack);
+                                    em.changeExp(-100);
+                                } else {
+                                    TextUtils.sendFormatted(
+                                        player,
+                                        "&(red)You must have 100 EXP to create 1 %0",
+                                        CustomItem.XP_BOTTLE.getName()
+                                    );
+                                }
+                            }
+                            break;
+                            case BUCKET: {
+                                if (em.getCurrentExp() >= 1000) {
+                                    ItemStack stack = CustomItem.XP_BUCKET.getItem();
+                                    ItemUtils.setItemStackLore(stack, ChatColor.GRAY + "1000 experience", "&9MonstersPlus");
+                                    world.dropItemNaturally(block.getLocation(), stack);
+                                    em.changeExp(-1000);
+                                } else {
+                                    TextUtils.sendFormatted(player, "&(red)You must have 1000 EXP to create 1 %0", CustomItem.XP_BUCKET.getName());
+                                    return;
+                                }
+                            }
+                            break;
+                        }
+                        ItemUtils.changeAmount(hand, -1);
+                        return;
+                    }
+                    case WATER_CAULDRON:
+                    case CAULDRON: {
+                        BrewHandler.rightClickCauldron(event);
+                    }
+                }
             }
         }
 
