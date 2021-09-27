@@ -1,21 +1,14 @@
 package com.funnyboyroks.monstersplus.Utils;
 
-import com.funnyboyroks.monstersplus.Jobs.Enchanter.EnchantList;
 import com.funnyboyroks.monstersplus.MonstersPlus;
-import com.sk89q.worldedit.Vector;
 import com.sk89q.worldguard.LocalPlayer;
-import com.sk89q.worldguard.bukkit.BukkitUtil;
 import com.sk89q.worldguard.bukkit.RegionContainer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.association.RegionAssociable;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -66,7 +59,7 @@ public class Utils {
     }
 
     public static boolean isPearlAllowed(Player shooter, Location loc) {
-        if(shooter.isOp()) return true;
+        if (shooter.isOp()) return true;
 
         // TODO: WorldGuard Integration
 
@@ -97,10 +90,10 @@ public class Utils {
             .map(String::toLowerCase)
             .map(s -> s.replaceAll("_", "-"))
             .filter(s -> s.startsWith(
-                v
-                    .toLowerCase()
-                    .replaceAll("_", "-")
-                )
+                        v
+                            .toLowerCase()
+                            .replaceAll("_", "-")
+                    )
             )
             .collect(Collectors.toList());
     }
@@ -154,6 +147,7 @@ public class Utils {
 
     /**
      * Attempts to parse int, if it can't, then 0 is returned
+     *
      * @param v the string to parse
      * @return the parsed int or 0
      */
@@ -161,7 +155,8 @@ public class Utils {
         int out = 0;
         try {
             out = Integer.parseInt(v);
-        } catch (NumberFormatException ignored){}
+        } catch (NumberFormatException ignored) {
+        }
         return out;
     }
 

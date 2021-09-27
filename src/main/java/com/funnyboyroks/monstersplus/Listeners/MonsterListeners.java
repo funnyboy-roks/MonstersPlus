@@ -23,6 +23,11 @@ public class MonsterListeners implements Listener {
 
         Entity damager = event.getDamager();
         Entity target = event.getEntity();
+
+        if (damager == target) {
+            event.setCancelled(true);
+            return;
+        }
         if (damager instanceof Projectile) {
             damager = (LivingEntity) (((Projectile) damager).getShooter());
             isProjectile = true;

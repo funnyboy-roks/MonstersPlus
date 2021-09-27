@@ -1,5 +1,6 @@
 package com.funnyboyroks.monstersplus;
 
+import com.funnyboyroks.monstersplus.Commands.CommandHelp;
 import com.funnyboyroks.monstersplus.Commands.CommandJobEnchant;
 import com.funnyboyroks.monstersplus.Commands.Monster;
 import com.funnyboyroks.monstersplus.Commands.CommandCustomSpawn;
@@ -52,6 +53,7 @@ public final class MonstersPlus extends JavaPlugin {
         sv.getPluginCommand("monster").setExecutor(new Monster());
         sv.getPluginCommand("jobenchant").setExecutor(new CommandJobEnchant());
         sv.getPluginCommand("customspawn").setExecutor(new CommandCustomSpawn());
+        sv.getPluginCommand("mphelp").setExecutor(new CommandHelp());
 
     }
 

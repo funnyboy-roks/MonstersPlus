@@ -12,6 +12,12 @@ commands:
     permission: mplus.command.monster
   customspawn:
     description: Spawn Custom Monsters.
+  mphelp:
+    description: Get information about the plugin
+    aliases: [ faq ]
+  jobenchant:
+    description: Command for doing job-specific enchants
+    aliases: [ customenchant ]
 permissions:
   mplus.command.monster:
     description: The permission to summon a monster using `/monster`
